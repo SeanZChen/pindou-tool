@@ -150,7 +150,49 @@ class PindouProcessor:
     #     
     #     # print(f"AI 处理完成，结果已保存到: {output_path}")
     
-    def process(self, input_path, output_folder, size=52):
+    def simplify_colors(self, color_map, color_counts, min_count=3):
+        w = max(k[0] for k in color_map.keys()) + 1
+        h = max(k[1] for k in color_map.keys()) + 1
+        
+        colors_to_remove = {code for code, count in color_counts.items() if count <= min_count}
+        if not colors_to_remove:
+            return color_map, color_counts
+        
+        print(f"\n正在简化颜色：移除数量小于等于 {min_count} 的 {len(colors_to_remove)} 种颜色")
+        
+        simplified_map = color_map.copy()
+        
+        for (x, y), info in list(simplified_map.items()):
+            if info['code'] in colors_to_remove:
+                neighbors = []
+                for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]:
+                    nx, ny = x + dx, y + dy
+                    if 0 <= nx < w and 0 <= ny < h and (nx, ny) in simplified_map:
+                        neighbors.append(simplified_map[(nx, ny)]['code'])
+                
+                if neighbors:
+                    neighbor_counts = {}
+                    for n in neighbors:
+                        neighbor_counts[n] = neighbor_counts.get(n, 0) + 1
+                    new_code = max(neighbor_counts, key=neighbor_counts.get)
+                    simplified_map[(x, y)] = {
+                        'code': new_code,
+                        'original': info['original'],
+                        'mapped': self.colors.get(new_code, (255, 255, 255))
+                    }
+        
+        new_color_counts = {}
+        for info in simplified_map.values():
+            code = info['code']
+            new_color_counts[code] = new_color_counts.get(code, 0) + 1
+        
+        print("简化后颜色统计：")
+        for code, count in sorted(new_color_counts.items()):
+            print(f"  {code}: {count} 颗")
+        
+        return simplified_map, new_color_counts
+    
+    def process(self, input_path, output_folder, size=52, simplify=False, min_count=3):
         img_origin = Image.open(input_path).convert("RGB")
         ori_w, ori_h = img_origin.size
         
@@ -171,9 +213,15 @@ class PindouProcessor:
         for code, count in sorted(color_counts.items()):
             print(f"  {code}: {count} 颗")
         
-        img_result = self.restore_mosaic(img_low_scale, ori_w, ori_h)
-        
         scale_factor = max(20, min(40, 1000 // max(img_low_scale.size)))
+        
+        original_color_map_img = None
+        original_color_counts = color_counts.copy()
+        if simplify:
+            original_color_map_img = self.create_color_mapped_image(img_low_scale, color_map, scale_factor, color_counts)
+            color_map, color_counts = self.simplify_colors(color_map, color_counts, min_count)
+        
+        img_result = self.restore_mosaic(img_low_scale, ori_w, ori_h)
         img_labeled = self.create_color_mapped_image(img_low_scale, color_map, scale_factor, color_counts)
         
         return {
@@ -182,5 +230,7 @@ class PindouProcessor:
             'color_map': img_labeled,
             'color_counts': color_counts,
             'original_size': (ori_w, ori_h),
-            'downsampled_size': img_low_scale.size
+            'downsampled_size': img_low_scale.size,
+            'original_color_map': original_color_map_img,
+            'original_color_counts': original_color_counts
         }
