@@ -7,7 +7,6 @@ htmlcov/
 dist/
 build/
 .env
-.DS_Store
 
 *.png
 *.jpg
@@ -17,4 +16,8 @@ build/
 *.webp
 
 !test_images/
-!test_images/**/*
+!test_images/**/*.png
+!test_images/**/*.jpg
+!test_images/**/*.jpeg
+
+**/.DS_Store
