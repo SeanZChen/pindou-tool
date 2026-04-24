@@ -8,3 +8,9 @@ dist/
 build/
 .env
 .DS_Store
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.webp
