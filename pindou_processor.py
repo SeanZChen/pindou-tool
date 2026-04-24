@@ -2,9 +2,15 @@ from PIL import Image, ImageDraw, ImageFont
 import math
 from mard_colors import MARD_221_COLORS
 
+# TODO: [Smart Mode] 添加 AI 接口所需的依赖
+# import requests
+# import base64
+
 class PindouProcessor:
     def __init__(self):
         self.colors = MARD_221_COLORS
+        # TODO: [Smart Mode] 初始化 AI 相关配置
+        # self.ai_api_url = "https://api.example.com/process"  # AI 模型接口地址
     
     def rgb_to_hex(self, rgb):
         return '#{:02x}{:02x}{:02x}'.format(*rgb)
@@ -111,6 +117,38 @@ class PindouProcessor:
                     row += 1
         
         return img_out
+    
+    # TODO: [Smart Mode] AI 智能处理方法 - 前景抠图 + 卡通画风转换
+    # def ai_process(self, input_path, output_path, api_token):
+    #     """
+    #     调用 AI 模型接口对图片进行处理
+    #     :param input_path: 输入图片路径
+    #     :param output_path: 输出图片路径
+    #     :param api_token: AI 接口的 API Token
+    #     """
+    #     # 1. 读取图片并转换为 Base64
+    #     # with open(input_path, 'rb') as f:
+    #     #     img_base64 = base64.b64encode(f.read()).decode('utf-8')
+    #     
+    #     # 2. 构建请求数据
+    #     # payload = {
+    #     #     'image': img_base64,
+    #     #     'token': api_token,
+    #     #     'operations': ['remove_background', 'cartoon_style']  # 前景抠图 + 卡通风格
+    #     # }
+    #     
+    #     # 3. 调用 AI 接口
+    #     # response = requests.post(self.ai_api_url, json=payload)
+    #     # response.raise_for_status()
+    #     
+    #     # 4. 解析响应并保存处理后的图片
+    #     # result_data = response.json()
+    #     # processed_img_base64 = result_data['processed_image']
+    #     # img_data = base64.b64decode(processed_img_base64)
+    #     # with open(output_path, 'wb') as f:
+    #     #     f.write(img_data)
+    #     
+    #     # print(f"AI 处理完成，结果已保存到: {output_path}")
     
     def process(self, input_path, output_folder, size=52):
         img_origin = Image.open(input_path).convert("RGB")

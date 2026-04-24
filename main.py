@@ -9,12 +9,26 @@ def main():
     parser.add_argument('-o', '--output', required=True, help='输出文件夹路径（自动创建）')
     parser.add_argument('-s', '--size', type=int, default=52, help='下采样后的长边分辨率 (默认: 52)')
     
+    # TODO: [Smart Mode] 添加 smart 模式参数
+    # parser.add_argument('--smart', action='store_true', help='启用 AI 智能处理模式')
+    # parser.add_argument('--token', help='AI 模型接口的 API Token')
+    
     args = parser.parse_args()
     
     os.makedirs(args.output, exist_ok=True)
     
     processor = PindouProcessor()
-    result = processor.process(args.input, args.output, args.size)
+    
+    # TODO: [Smart Mode] 如果启用 smart 模式，先调用 AI 处理图片
+    # if args.smart:
+    #     ai_processed_path = os.path.join(args.output, "ai_processed.png")
+    #     processor.ai_process(args.input, ai_processed_path, args.token)
+    #     input_path = ai_processed_path
+    # else:
+    #     input_path = args.input
+    
+    input_path = args.input  # TODO: [Smart Mode] 移除此行，使用上面的逻辑
+    result = processor.process(input_path, args.output, args.size)
     
     low_res_path = os.path.join(args.output, "low_res.png")
     mosaic_path = os.path.join(args.output, "mosaic.png")
@@ -28,6 +42,9 @@ def main():
     print(f"  low_res.png - 低分辨率图")
     print(f"  mosaic.png - 马赛克效果原图")
     print(f"  color_map.png - 国产221色拼豆颜色映射图（带颜色代码）")
+    # TODO: [Smart Mode] 如果启用 smart 模式，打印 AI 处理相关信息
+    # if args.smart:
+    #     print(f"  ai_processed.png - AI 处理后的图片")
 
 if __name__ == "__main__":
     main()
