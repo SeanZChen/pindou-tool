@@ -43,40 +43,36 @@ python main.py -i test_img.png -o output -s 52
 
 ## 示例效果
 
-### 输入输出对比
+### 输入图片
+![输入图片](test_images/img2.jpg)
 
-| 类型 | 说明 |
-|------|------|
-| **输入图片** | 任意 RGB 图片（推荐尺寸：1024x1024 或更高） |
-| **低分辨率图** | 长边缩放到指定尺寸（默认52像素），用于预览颜色分布 |
-| **马赛克效果** | 使用最近邻插值还原到原尺寸，呈现硬像素马赛克效果 |
-| **颜色映射图** | 放大后的色块图，每个方块标注对应的221色拼豆编码 |
+### 输出效果
+
+#### 1. 低分辨率图 (low_res.png)
+![低分辨率图](test_images/img2_processed/low_res.png)
+
+#### 2. 马赛克效果 (mosaic.png)
+![马赛克效果](test_images/img2_processed/mosaic.png)
+
+#### 3. 颜色映射图 (color_map.png)
+![颜色映射图](test_images/img2_processed/color_map.png)
 
 ### 运行示例
 
 ```bash
-# 创建测试图片目录
-mkdir -p test_images
-
-# 下载示例图片（可选）
-curl -o test_images/test_img.jpg https://example.com/test.jpg
-
 # 运行处理
-python main.py -i test_images/test_img.jpg -o test_images/test_img_processed -s 52
+python main.py -i test_images/img2.jpg -o test_images/img2_processed -s 48
 ```
 
 ### 颜色统计输出示例
 
 ```
-原图尺寸：2560 × 1440
-降采样尺寸：(52, 29)
-已映射 1508 个像素点到国产221色拼豆色卡
+原图尺寸：512 × 512
+降采样尺寸：(48, 48)
+已映射 2304 个像素点到国产221色拼豆色卡
 
 国产221色拼豆颜色统计：
-  A1: 5 颗
-  B2: 12 颗
-  H7: 45 颗
-  ...
+  A7: 2304 颗
 ```
 
 ## 代码结构
