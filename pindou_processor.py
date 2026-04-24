@@ -54,10 +54,15 @@ class PindouProcessor:
         
         return color_map
     
-    def create_color_mapped_image(self, img_low, color_map, scale_factor=20):
+    def create_color_mapped_image(self, img_low, color_map, scale_factor=20, color_counts=None):
         w, h = img_low.size
         cell_size = scale_factor
-        img_out = Image.new('RGB', (w * cell_size, h * cell_size), color=(255, 255, 255))
+        
+        stats_height = 0
+        if color_counts:
+            stats_height = (len(color_counts) // 8 + 1) * 25 + 20
+        
+        img_out = Image.new('RGB', (w * cell_size, h * cell_size + stats_height), color=(255, 255, 255))
         draw = ImageDraw.Draw(img_out)
         
         try:
@@ -82,6 +87,28 @@ class PindouProcessor:
             text_y = y_start + (cell_size - text_h) // 2
             
             draw.text((text_x, text_y), code, fill=(0, 0, 0) if sum(mapped_rgb) > 382 else (255, 255, 255), font=font)
+        
+        if color_counts:
+            draw.text((10, h * cell_size + 5), "色块统计：", fill=(0, 0, 0), font=font)
+            
+            sorted_colors = sorted(color_counts.items(), key=lambda x: (-x[1], x[0]))
+            row = 0
+            col = 0
+            
+            for code, count in sorted_colors:
+                x_pos = 10 + col * 100
+                y_pos = h * cell_size + 20 + row * 20
+                
+                color_rgb = self.colors.get(code, (255, 255, 255))
+                draw.rectangle([x_pos, y_pos, x_pos + 16, y_pos + 16], fill=color_rgb, outline=(128, 128, 128), width=1)
+                
+                text = f"{code}: {count}"
+                draw.text((x_pos + 20, y_pos), text, fill=(0, 0, 0), font=font)
+                
+                col += 1
+                if col >= 8:
+                    col = 0
+                    row += 1
         
         return img_out
     
@@ -109,7 +136,7 @@ class PindouProcessor:
         img_result = self.restore_mosaic(img_low_scale, ori_w, ori_h)
         
         scale_factor = max(20, min(40, 1000 // max(img_low_scale.size)))
-        img_labeled = self.create_color_mapped_image(img_low_scale, color_map, scale_factor)
+        img_labeled = self.create_color_mapped_image(img_low_scale, color_map, scale_factor, color_counts)
         
         return {
             'low_res': img_low_scale,
