@@ -10,20 +10,33 @@
 - ✅ 颜色代码标注
 - ✅ 色块数量统计（显示在结果图下方）
 - ✅ 颜色简化模式（移除稀有颜色，减少豆子种类）
+- ✅ 网页界面（支持拖拽上传、在线预览、一键下载）
 
 ## 安装依赖
 
 ```bash
-pip install pillow
+pip install pillow flask flask-cors
 ```
 
 ## 使用方法
+
+### 方式一：命令行模式
 
 ```bash
 python main.py -i <输入图片路径> -o <输出文件夹> -s <分辨率>
 
 # 示例
 python main.py -i test_img.png -o output -s 52
+```
+
+### 方式二：网页模式
+
+```bash
+# 启动 Flask 服务
+python app.py
+
+# 打开浏览器访问
+http://localhost:5001
 ```
 
 ### 参数说明
@@ -43,6 +56,12 @@ python main.py -i test_img.png -o output -s 52
 1. **low_res.png** - 低分辨率图（用于参考颜色）
 2. **mosaic.png** - 马赛克效果原图（用于打印参考）
 3. **color_map.png** - 颜色映射图（带颜色代码标注）
+
+### 颜色简化模式额外输出
+
+当启用 `--simplify` 参数时，额外生成：
+
+4. **color_map_original.png** - 简化前的颜色映射图（包含所有颜色）
 
 ## 示例效果
 
@@ -83,9 +102,11 @@ python main.py -i test_images/img2.jpg -o test_images/img2_processed -s 48
 ```
 pindou/
 ├── main.py              # 命令行入口
+├── app.py               # Flask 后端
 ├── pindou_processor.py  # 核心处理类
 ├── mard_colors.py       # 国产221色拼豆色卡
-└── downsample.py        # 原始脚本
+└── templates/
+    └── index.html       # 前端页面
 ```
 
 ## 色卡说明
