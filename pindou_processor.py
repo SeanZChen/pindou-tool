@@ -60,9 +60,14 @@ class PindouProcessor:
         
         return color_map
     
-    def create_color_mapped_image(self, img_low, color_map, scale_factor=20, color_counts=None):
+    def create_color_mapped_image(self, img_low, color_map, scale_factor=20, color_counts=None, high_res_short_edge=4096):
         w, h = img_low.size
-        cell_size = scale_factor
+        
+        if high_res_short_edge > 0:
+            min_dim = min(w, h)
+            cell_size = high_res_short_edge // min_dim
+        else:
+            cell_size = scale_factor
         
         stats_height = 0
         if color_counts:
@@ -71,8 +76,9 @@ class PindouProcessor:
         img_out = Image.new('RGB', (w * cell_size, h * cell_size + stats_height), color=(255, 255, 255))
         draw = ImageDraw.Draw(img_out)
         
+        font_size = max(8, min(12, cell_size // 3))
         try:
-            font = ImageFont.truetype('Arial.ttf', 8)
+            font = ImageFont.truetype('Arial.ttf', font_size)
         except:
             font = ImageFont.load_default()
         
@@ -192,7 +198,7 @@ class PindouProcessor:
         
         return simplified_map, new_color_counts
     
-    def process(self, input_path, output_folder, size=52, simplify=False, min_count=3):
+    def process(self, input_path, output_folder, size=52, simplify=False, min_count=3, high_res_short_edge=4096):
         img_origin = Image.open(input_path).convert("RGB")
         ori_w, ori_h = img_origin.size
         
@@ -213,16 +219,14 @@ class PindouProcessor:
         for code, count in sorted(color_counts.items()):
             print(f"  {code}: {count} 颗")
         
-        scale_factor = max(20, min(40, 1000 // max(img_low_scale.size)))
-        
         original_color_map_img = None
         original_color_counts = color_counts.copy()
         if simplify:
-            original_color_map_img = self.create_color_mapped_image(img_low_scale, color_map, scale_factor, color_counts)
+            original_color_map_img = self.create_color_mapped_image(img_low_scale, color_map, color_counts=color_counts, high_res_short_edge=high_res_short_edge)
             color_map, color_counts = self.simplify_colors(color_map, color_counts, min_count)
         
         img_result = self.restore_mosaic(img_low_scale, ori_w, ori_h)
-        img_labeled = self.create_color_mapped_image(img_low_scale, color_map, scale_factor, color_counts)
+        img_labeled = self.create_color_mapped_image(img_low_scale, color_map, color_counts=color_counts, high_res_short_edge=high_res_short_edge)
         
         return {
             'low_res': img_low_scale,

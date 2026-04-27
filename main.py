@@ -12,6 +12,7 @@ def main():
     parser.add_argument('-k', '--min-count', type=int, default=3, help='最小豆子数量阈值，小于等于此值的颜色将被合并 (默认: 3)')
     parser.add_argument('--ai', action='store_true', help='启用火山引擎AI图像优化')
     parser.add_argument('--api-key', help='火山引擎API Key（启用AI优化时必填）')
+    parser.add_argument('--high-res', type=int, default=4096, help='输出图片短边分辨率，长边等比例放大 (默认: 4096)')
     
     args = parser.parse_args()
     
@@ -39,7 +40,7 @@ def main():
             input_path = args.input
     
     processor = PindouProcessor()
-    result = processor.process(input_path, args.output, args.size, args.simplify, args.min_count)
+    result = processor.process(input_path, args.output, args.size, args.simplify, args.min_count, args.high_res)
     
     low_res_path = os.path.join(args.output, "low_res.png")
     mosaic_path = os.path.join(args.output, "mosaic.png")
