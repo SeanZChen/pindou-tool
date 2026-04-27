@@ -1,21 +1,11 @@
-from volcengine.maas import MaasService
-from volcengine.maas import MaasException
+import requests
 import base64
 import io
 
 class AIProcessor:
     def __init__(self, api_key):
         self.api_key = api_key
-        self.service = None
-    
-    def _init_service(self):
-        if self.service is None:
-            try:
-                self.service = MaasService("maas-api.bytedance.net", 443)
-                self.service.set_api_key(self.api_key)
-                self.service.set_timeout(60)
-            except Exception as e:
-                raise Exception(f"初始化火山引擎服务失败: {str(e)}")
+        self.base_url = "https://maas-api.bytedance.net/api/text2image"
     
     def optimize_image(self, image_path, output_path=None):
         """
@@ -24,8 +14,6 @@ class AIProcessor:
         :param output_path: 输出图片路径（可选）
         :return: 优化后的图片对象
         """
-        self._init_service()
-        
         try:
             with open(image_path, 'rb') as f:
                 image_bytes = f.read()
@@ -47,10 +35,18 @@ class AIProcessor:
                 "cfg_scale": 7.5
             }
             
-            response = self.service.text2image(request_data)
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}"
+            }
             
-            if response and 'data' in response and len(response['data']) > 0:
-                result_base64 = response['data'][0]['image']
+            response = requests.post(self.base_url, json=request_data, headers=headers, timeout=60)
+            response.raise_for_status()
+            
+            result = response.json()
+            
+            if result and 'data' in result and len(result['data']) > 0:
+                result_base64 = result['data'][0]['image']
                 result_bytes = base64.b64decode(result_base64)
                 
                 from PIL import Image
@@ -63,7 +59,7 @@ class AIProcessor:
             else:
                 raise Exception("AI处理返回结果为空")
                 
-        except MaasException as e:
-            raise Exception(f"火山引擎API调用失败: {str(e)}")
+        except requests.exceptions.RequestException as e:
+            raise Exception(f"API请求失败: {str(e)}")
         except Exception as e:
             raise Exception(f"图像处理失败: {str(e)}")
