@@ -394,6 +394,18 @@
                     </div>
                 </div>
                 
+                <div class="config-row" id="aiConfig" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px dashed #eee;">
+                    <div class="config-item">
+                        <label for="apiKey">火山引擎API Key</label>
+                        <input type="password" id="apiKey" placeholder="请输入您的火山引擎API Key">
+                    </div>
+                </div>
+                
+                <div class="checkbox-label" style="margin-top: 10px;">
+                    <input type="checkbox" id="useAI">
+                    <label for="useAI">启用火山引擎AI图像优化（主体识别、遮挡补全、卡通风格转换）</label>
+                </div>
+                
                 <button class="btn" id="processBtn" disabled>开始处理</button>
             </div>
             
@@ -422,6 +434,13 @@
             </div>
             
             <div class="images-grid">
+                <div class="image-card" id="aiProcessedCard" style="display: none;">
+                    <div class="image-header">
+                        <h3>AI优化后的图片</h3>
+                        <button class="download-btn" data-type="ai_processed">下载</button>
+                    </div>
+                    <img id="aiProcessedImg" alt="AI优化后的图片">
+                </div>
                 <div class="image-card">
                     <div class="image-header">
                         <h3>低分辨率图</h3>
@@ -518,18 +537,32 @@
             `;
         }
         
+        document.getElementById('useAI').addEventListener('change', () => {
+            const aiConfig = document.getElementById('aiConfig');
+            aiConfig.style.display = document.getElementById('useAI').checked ? 'block' : 'none';
+        });
+        
         processBtn.addEventListener('click', async () => {
             if (!uploadedFile) return;
             
             const size = document.getElementById('size').value;
             const simplify = document.getElementById('simplify').checked;
             const minCount = document.getElementById('minCount').value;
+            const useAI = document.getElementById('useAI').checked;
+            const apiKey = document.getElementById('apiKey').value;
+            
+            if (useAI && !apiKey) {
+                alert('请输入火山引擎API Key');
+                return;
+            }
             
             const formData = new FormData();
             formData.append('file', uploadedFile);
             formData.append('size', size);
             formData.append('simplify', simplify);
             formData.append('min_count', minCount);
+            formData.append('ai', useAI);
+            formData.append('api_key', apiKey);
             
             loading.classList.add('show');
             results.classList.remove('show');
@@ -551,6 +584,14 @@
                         `${data.downsampled_size[0]} × ${data.downsampled_size[1]}`;
                     document.getElementById('colorCount').textContent = 
                         Object.keys(data.color_counts).length;
+                    
+                    if (data.images.ai_processed) {
+                        document.getElementById('aiProcessedImg').src = 
+                            'data:image/png;base64,' + hexToBase64(data.images.ai_processed);
+                        document.getElementById('aiProcessedCard').style.display = 'block';
+                    } else {
+                        document.getElementById('aiProcessedCard').style.display = 'none';
+                    }
                     
                     document.getElementById('lowResImg').src = 
                         'data:image/png;base64,' + hexToBase64(data.images.low_res);
