@@ -16,6 +16,7 @@
 
 ```bash
 pip install pillow flask flask-cors
+pip install 'volcengine-python-sdk[ark]'
 ```
 
 ## 使用方法
@@ -121,6 +122,7 @@ pindou/
 ├── main.py              # 命令行入口
 ├── app.py               # Flask 后端
 ├── pindou_processor.py  # 核心处理类
+├── ai_processor.py      # AI图像优化模块（火山引擎SDK）
 ├── mard_colors.py       # 国产221色拼豆色卡
 └── templates/
     └── index.html       # 前端页面
