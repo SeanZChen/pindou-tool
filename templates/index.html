@@ -13,38 +13,157 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f5f7fa;
             min-height: 100vh;
-            padding: 20px;
+            display: flex;
         }
         
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            text-align: center;
+        .sidebar {
+            width: 240px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
             color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            text-align: center;
             margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
         }
         
-        .header h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        .logo h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
         }
         
-        .header p {
-            opacity: 0.9;
+        .logo p {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .nav-menu {
+            flex: 1;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .nav-item.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .nav-item i {
+            font-size: 18px;
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 240px;
+            min-height: 100vh;
+            padding: 30px;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
         }
         
         .card {
             background: white;
             border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
             padding: 30px;
             margin-bottom: 20px;
+        }
+        
+        .card-header {
+            margin-bottom: 25px;
+        }
+        
+        .card-header h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .card-header p {
+            color: #666;
+        }
+        
+        .hero-section {
+            text-align: center;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .hero-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .hero-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 25px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            text-align: center;
+        }
+        
+        .feature-card i {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .feature-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
         }
         
         .upload-area {
@@ -135,14 +254,13 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 15px 40px;
+            padding: 14px 30px;
             border-radius: 10px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 20px;
-            width: 100%;
         }
         
         .btn:hover {
@@ -166,83 +284,13 @@
             box-shadow: none;
         }
         
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        
         .btn-small {
             padding: 8px 16px;
             font-size: 14px;
-        }
-        
-        .canvas-cell.highlighted {
-            outline: 3px solid #ff6b6b;
-            outline-offset: 2px;
-            animation: pulse 1s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { outline-color: #ff6b6b; }
-            50% { outline-color: #ff8787; }
-        }
-        
-        .used-colors-panel {
-            background: #fff;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
-            border: 1px solid #eee;
-        }
-        
-        .used-colors-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .used-colors-list {
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        
-        .used-color-item {
-            display: flex;
-            align-items: center;
-            padding: 6px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-bottom: 2px;
-        }
-        
-        .used-color-item:hover {
-            background: #f8f9fa;
-        }
-        
-        .used-color-item.active {
-            background: #e8f4fd;
-        }
-        
-        .used-color-box {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            margin-right: 10px;
-            border: 1px solid #ddd;
-        }
-        
-        .used-color-code {
-            font-weight: 600;
-            color: #333;
-            width: 45px;
-            font-size: 12px;
-        }
-        
-        .used-color-count {
-            color: #666;
-            font-size: 12px;
-            margin-left: auto;
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
         }
         
         .loading {
@@ -270,36 +318,37 @@
             100% { transform: rotate(360deg); }
         }
         
-        .results {
-            display: none;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
         }
         
-        .results.show {
-            display: block;
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
         }
         
-        .editor {
-            display: none;
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
         }
         
-        .editor.show {
-            display: block;
-        }
-        
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #333;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
+        .stat-card .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
         }
         
         .images-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         
         .image-card {
@@ -330,7 +379,7 @@
         .image-card img {
             width: 100%;
             display: block;
-            max-height: 300px;
+            max-height: 280px;
             object-fit: contain;
         }
         
@@ -347,36 +396,6 @@
         
         .download-btn:hover {
             background: #5a6fd6;
-        }
-        
-        .stats-section {
-            margin-top: 30px;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-        }
-        
-        .stat-card .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-        
-        .stat-card .stat-label {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-top: 5px;
         }
         
         .color-list {
@@ -501,6 +520,17 @@
             border: 1px dashed #ccc;
         }
         
+        .canvas-cell.highlighted {
+            outline: 3px solid #ff6b6b;
+            outline-offset: 2px;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { outline-color: #ff6b6b; }
+            50% { outline-color: #ff8787; }
+        }
+        
         .color-picker-panel {
             background: #f8f9fa;
             border-radius: 12px;
@@ -509,24 +539,24 @@
         }
         
         .color-picker-grid {
-            max-height: 400px;
+            max-height: 350px;
             overflow-y: auto;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             padding-right: 5px;
         }
         
         .color-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
         .color-group-header {
             font-size: 12px;
             font-weight: 600;
             color: #667eea;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             padding-left: 5px;
             border-bottom: 1px dashed #eee;
-            padding-bottom: 4px;
+            padding-bottom: 3px;
         }
         
         .color-group-colors {
@@ -570,10 +600,70 @@
             );
         }
         
+        .used-colors-panel {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #eee;
+        }
+        
+        .used-colors-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .used-colors-list {
+            max-height: 180px;
+            overflow-y: auto;
+        }
+        
+        .used-color-item {
+            display: flex;
+            align-items: center;
+            padding: 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 2px;
+        }
+        
+        .used-color-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .used-color-item.active {
+            background: #e8f4fd;
+        }
+        
+        .used-color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        .used-color-code {
+            font-weight: 600;
+            color: #333;
+            width: 45px;
+            font-size: 12px;
+        }
+        
+        .used-color-count {
+            color: #666;
+            font-size: 12px;
+            margin-left: auto;
+        }
+        
         .editor-actions {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            margin-top: 15px;
         }
         
         .compare-view {
@@ -596,16 +686,87 @@
             color: #666;
         }
         
-        @media (max-width: 768px) {
-            .config-row {
-                grid-template-columns: 1fr;
+        .new-template-form {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .new-template-form h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-item label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .form-item input[type="number"] {
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .form-item input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
             }
             
-            .images-grid {
-                grid-template-columns: 1fr;
+            .main-content {
+                margin-left: 200px;
             }
             
             .editor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                bottom: auto;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .nav-menu {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .nav-item {
+                flex: 1;
+                min-width: calc(33.33% - 6px);
+                justify-content: center;
+            }
+            
+            .images-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -616,186 +777,286 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🎨 拼豆图片预处理工具</h1>
-            <p>将图片转换为国产221色拼豆色卡映射</p>
+    <div class="sidebar">
+        <div class="logo">
+            <h1>🎨 拼豆工具</h1>
+            <p>将图片转换为拼豆模板</p>
         </div>
         
-        <div class="card" id="mainCard">
-            <div class="upload-area" id="uploadArea">
-                <i>📷</i>
-                <p>点击或拖拽上传图片</p>
-                <small>支持 JPG、PNG 格式</small>
-                <input type="file" id="fileInput" accept="image/*">
+        <div class="nav-menu">
+            <div class="nav-item active" data-page="home">
+                <i>🏠</i>
+                <span>主页</span>
+            </div>
+            <div class="nav-item" data-page="image-to-pindou">
+                <i>🖼️</i>
+                <span>图生豆图</span>
+            </div>
+            <div class="nav-item" data-page="edit-pindou">
+                <i>✏️</i>
+                <span>编辑豆图</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div id="page-home" class="page active">
+            <div class="hero-section">
+                <h1>欢迎使用拼豆图片预处理工具</h1>
+                <p>将您喜欢的图片转换为精美的拼豆模板，支持颜色映射、智能简化和可视化编辑</p>
+                <button class="btn" style="margin-top: 15px;" onclick="navigateTo('image-to-pindou')">开始制作</button>
             </div>
             
-            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #eee;">
-                <div class="upload-area" id="douUploadArea" style="padding: 20px;">
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <i>🖼️</i>
+                    <h3>图生豆图</h3>
+                    <p>上传图片自动转换为拼豆模板，支持国产221色拼豆色卡映射</p>
+                </div>
+                <div class="feature-card">
+                    <i>🎯</i>
+                    <h3>智能简化</h3>
+                    <p>自动减少颜色种类，移除稀有颜色，让拼豆制作更简单</p>
+                </div>
+                <div class="feature-card">
+                    <i>✏️</i>
+                    <h3>可视化编辑</h3>
+                    <p>直观的网格编辑器，支持颜色高亮、批量修改和对比预览</p>
+                </div>
+                <div class="feature-card">
+                    <i>💾</i>
+                    <p>支持导出.dou模板文件，方便分享和二次编辑</p>
+                </div>
+                <div class="feature-card">
+                    <i>🚀</i>
+                    <h3>AI优化</h3>
+                    <p>可选使用火山引擎AI进行图像优化，提升模板效果</p>
+                </div>
+                <div class="feature-card">
+                    <i>📊</i>
+                    <h3>数量统计</h3>
+                    <p>自动统计每种颜色需要的豆子数量，方便采购准备</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="page-image-to-pindou" class="page">
+            <div class="card">
+                <div class="card-header">
+                    <h2>图生豆图</h2>
+                    <p>上传图片，将其转换为拼豆模板</p>
+                </div>
+                
+                <div class="upload-area" id="uploadArea">
+                    <i>📷</i>
+                    <p>点击或拖拽上传图片</p>
+                    <small>支持 JPG、PNG 格式</small>
+                    <input type="file" id="fileInput" accept="image/*">
+                </div>
+                
+                <div class="config-section">
+                    <div class="config-row">
+                        <div class="config-item">
+                            <label for="size">下采样长边分辨率</label>
+                            <input type="number" id="size" value="52" min="10" max="100">
+                        </div>
+                        <div class="config-item checkbox-label">
+                            <input type="checkbox" id="simplify">
+                            <label for="simplify">启用颜色简化模式</label>
+                        </div>
+                        <div class="config-item">
+                            <label for="minCount">最小豆子数量阈值（<=此值的颜色将被合并）</label>
+                            <input type="number" id="minCount" value="3" min="1" max="20">
+                        </div>
+                    </div>
+                    
+                    <div class="config-row" id="aiConfig" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px dashed #eee;">
+                        <div class="config-item">
+                            <label for="apiKey">火山引擎API Key</label>
+                            <input type="password" id="apiKey" placeholder="请输入您的火山引擎API Key">
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-label" style="margin-top: 10px;">
+                        <input type="checkbox" id="useAI">
+                        <label for="useAI">启用火山引擎AI图像优化（主体识别、遮挡补全、卡通风格转换）</label>
+                    </div>
+                    
+                    <button class="btn" id="processBtn" disabled>开始处理</button>
+                </div>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>正在处理图片...</p>
+                </div>
+            </div>
+            
+            <div class="card results" id="results" style="display: none;">
+                <div class="card-header">
+                    <h2>处理结果</h2>
+                    <button class="btn btn-secondary btn-small" id="editTemplateBtn" style="float: right; margin-top: -5px;">编辑模板</button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="originalSize">-</div>
+                        <div class="stat-label">原图尺寸</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="downsampledSize">-</div>
+                        <div class="stat-label">降采样尺寸</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="colorCount">-</div>
+                        <div class="stat-label">颜色种类</div>
+                    </div>
+                </div>
+                
+                <div class="images-grid">
+                    <div class="image-card" id="aiProcessedCard" style="display: none;">
+                        <div class="image-header">
+                            <h3>AI优化后的图片</h3>
+                            <button class="download-btn" data-type="ai_processed">下载</button>
+                        </div>
+                        <img id="aiProcessedImg" alt="AI优化后的图片">
+                    </div>
+                    <div class="image-card">
+                        <div class="image-header">
+                            <h3>低分辨率图</h3>
+                            <button class="download-btn" data-type="low_res">下载</button>
+                        </div>
+                        <img id="lowResImg" alt="低分辨率图">
+                    </div>
+                    <div class="image-card">
+                        <div class="image-header">
+                            <h3>马赛克效果</h3>
+                            <button class="download-btn" data-type="mosaic">下载</button>
+                        </div>
+                        <img id="mosaicImg" alt="马赛克效果">
+                    </div>
+                    <div class="image-card">
+                        <div class="image-header">
+                            <h3>颜色映射图</h3>
+                            <button class="download-btn" data-type="color_map">下载</button>
+                        </div>
+                        <img id="colorMapImg" alt="颜色映射图">
+                    </div>
+                    <div class="image-card" id="originalColorMapCard" style="display: none;">
+                        <div class="image-header">
+                            <h3>简化前颜色映射图</h3>
+                            <button class="download-btn" data-type="original_color_map">下载</button>
+                        </div>
+                        <img id="originalColorMapImg" alt="简化前颜色映射图">
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn" id="downloadDouBtn">下载 .dou 文件</button>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <div class="tabs">
+                        <button class="tab active" data-tab="colorCounts">颜色统计</button>
+                        <button class="tab" data-tab="originalColorCounts" id="originalColorCountsTab" style="display: none;">简化前颜色统计</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="colorCounts">
+                        <div class="color-list" id="colorCountsList"></div>
+                    </div>
+                    <div class="tab-content" id="originalColorCounts">
+                        <div class="color-list" id="originalColorCountsList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="page-edit-pindou" class="page">
+            <div class="card">
+                <div class="card-header">
+                    <h2>编辑豆图</h2>
+                    <p>编辑现有的拼豆模板或创建新的空白模板</p>
+                </div>
+                
+                <div class="new-template-form">
+                    <h3>新建空白豆图</h3>
+                    <div class="form-row">
+                        <div class="form-item">
+                            <label for="newWidth">宽度（格点）</label>
+                            <input type="number" id="newWidth" value="48" min="10" max="100">
+                        </div>
+                        <div class="form-item">
+                            <label for="newHeight">高度（格点）</label>
+                            <input type="number" id="newHeight" value="48" min="10" max="100">
+                        </div>
+                    </div>
+                    <button class="btn" id="createNewTemplateBtn">创建空白模板</button>
+                </div>
+                
+                <div class="upload-area" id="douUploadArea" style="padding: 30px;">
                     <i>📄</i>
-                    <p>或上传 .dou 模板文件进行编辑</p>
+                    <p>或上传已有的 .dou 模板文件进行编辑</p>
                     <input type="file" id="douFileInput" accept=".dou">
                 </div>
-            </div>
-            
-            <div class="config-section">
-                <div class="config-row">
-                    <div class="config-item">
-                        <label for="size">下采样长边分辨率</label>
-                        <input type="number" id="size" value="52" min="10" max="100">
-                    </div>
-                    <div class="config-item checkbox-label">
-                        <input type="checkbox" id="simplify">
-                        <label for="simplify">启用颜色简化模式</label>
-                    </div>
-                    <div class="config-item">
-                        <label for="minCount">最小豆子数量阈值（<=此值的颜色将被合并）</label>
-                        <input type="number" id="minCount" value="3" min="1" max="20">
-                    </div>
-                </div>
                 
-                <div class="config-row" id="aiConfig" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px dashed #eee;">
-                    <div class="config-item">
-                        <label for="apiKey">火山引擎API Key</label>
-                        <input type="password" id="apiKey" placeholder="请输入您的火山引擎API Key">
-                    </div>
-                </div>
-                
-                <div class="checkbox-label" style="margin-top: 10px;">
-                    <input type="checkbox" id="useAI">
-                    <label for="useAI">启用火山引擎AI图像优化（主体识别、遮挡补全、卡通风格转换）</label>
-                </div>
-                
-                <button class="btn" id="processBtn" disabled>开始处理</button>
-            </div>
-            
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>正在处理图片...</p>
-            </div>
-        </div>
-        
-        <div class="card results" id="results">
-            <div class="section-title">处理结果</div>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="originalSize">-</div>
-                    <div class="stat-label">原图尺寸</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="downsampledSize">-</div>
-                    <div class="stat-label">降采样尺寸</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="colorCount">-</div>
-                    <div class="stat-label">颜色种类</div>
-                </div>
-            </div>
-            
-            <div class="images-grid">
-                <div class="image-card" id="aiProcessedCard" style="display: none;">
-                    <div class="image-header">
-                        <h3>AI优化后的图片</h3>
-                        <button class="download-btn" data-type="ai_processed">下载</button>
-                    </div>
-                    <img id="aiProcessedImg" alt="AI优化后的图片">
-                </div>
-                <div class="image-card">
-                    <div class="image-header">
-                        <h3>低分辨率图</h3>
-                        <button class="download-btn" data-type="low_res">下载</button>
-                    </div>
-                    <img id="lowResImg" alt="低分辨率图">
-                </div>
-                <div class="image-card">
-                    <div class="image-header">
-                        <h3>马赛克效果</h3>
-                        <button class="download-btn" data-type="mosaic">下载</button>
-                    </div>
-                    <img id="mosaicImg" alt="马赛克效果">
-                </div>
-                <div class="image-card">
-                    <div class="image-header">
-                        <h3>颜色映射图</h3>
-                        <button class="download-btn" data-type="color_map">下载</button>
-                    </div>
-                    <img id="colorMapImg" alt="颜色映射图">
-                </div>
-                <div class="image-card" id="originalColorMapCard" style="display: none;">
-                    <div class="image-header">
-                        <h3>简化前颜色映射图</h3>
-                        <button class="download-btn" data-type="original_color_map">下载</button>
-                    </div>
-                    <img id="originalColorMapImg" alt="简化前颜色映射图">
-                </div>
-            </div>
-            
-            <div style="margin-top: 20px;">
-                <button class="btn btn-secondary" id="editTemplateBtn">编辑模板</button>
-                <button class="btn" id="downloadDouBtn">下载 .dou 文件</button>
-            </div>
-            
-            <div class="stats-section">
-                <div class="tabs">
-                    <button class="tab active" data-tab="colorCounts">颜色统计</button>
-                    <button class="tab" data-tab="originalColorCounts" id="originalColorCountsTab" style="display: none;">简化前颜色统计</button>
-                </div>
-                
-                <div class="tab-content active" id="colorCounts">
-                    <div class="color-list" id="colorCountsList"></div>
-                </div>
-                <div class="tab-content" id="originalColorCounts">
-                    <div class="color-list" id="originalColorCountsList"></div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card editor" id="editor">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 class="section-title" style="margin: 0;">模板编辑器</h2>
-                <button class="btn btn-secondary btn-small" id="backBtn">返回</button>
-            </div>
-            
-            <div class="editor-grid">
-                <div class="canvas-container">
-                    <div class="editor-canvas" id="editorCanvas"></div>
-                </div>
-                
-                <div class="color-picker-panel">
-                    <h4 style="margin-bottom: 15px;">选择颜色</h4>
-                    <div class="color-picker-grid" id="colorPickerGrid"></div>
-                    
-                    <div class="used-colors-panel" id="usedColorsPanel">
-                        <div class="used-colors-title">已使用颜色 (点击高亮)</div>
-                        <div class="used-colors-list" id="usedColorsList"></div>
+                <div id="editorContainer" style="display: none;">
+                    <div class="editor-grid">
+                        <div class="canvas-container">
+                            <div class="editor-canvas" id="editorCanvas"></div>
+                        </div>
+                        
+                        <div class="color-picker-panel">
+                            <h4 style="margin-bottom: 15px;">选择颜色</h4>
+                            <div class="color-picker-grid" id="colorPickerGrid"></div>
+                            
+                            <div class="used-colors-panel" id="usedColorsPanel">
+                                <div class="used-colors-title">已使用颜色 (点击高亮)</div>
+                                <div class="used-colors-list" id="usedColorsList"></div>
+                            </div>
+                            
+                            <div class="editor-actions">
+                                <button class="btn btn-danger" id="deleteSelectedBtn">删除选中格点</button>
+                                <button class="btn" id="applyColorBtn">应用颜色到选中区域</button>
+                                <button class="btn btn-secondary" id="clearHighlightBtn">清除高亮</button>
+                                <button class="btn btn-secondary" id="compareBtn">对比编辑前后</button>
+                                <button class="btn" id="downloadEditedDouBtn">下载编辑后的 .dou 文件</button>
+                                <button class="btn btn-secondary" id="previewEditedBtn">预览编辑后的图片</button>
+                            </div>
+                        </div>
                     </div>
                     
-                    <div class="editor-actions">
-                        <button class="btn btn-danger" id="deleteSelectedBtn">删除选中格点</button>
-                        <button class="btn" id="applyColorBtn">应用颜色到选中区域</button>
-                        <button class="btn btn-secondary" id="clearHighlightBtn">清除高亮</button>
-                        <button class="btn btn-secondary" id="compareBtn">对比编辑前后</button>
-                        <button class="btn" id="downloadEditedDouBtn">下载编辑后的 .dou 文件</button>
-                        <button class="btn btn-secondary" id="previewEditedBtn">预览编辑后的图片</button>
+                    <div class="compare-view" id="compareView" style="display: none; margin-top: 30px;">
+                        <div class="compare-panel">
+                            <h4>编辑前</h4>
+                            <img id="beforePreview" alt="编辑前">
+                        </div>
+                        <div class="compare-panel">
+                            <h4>编辑后</h4>
+                            <img id="afterPreview" alt="编辑后">
+                        </div>
                     </div>
-                </div>
-            </div>
-            
-            <div class="compare-view" id="compareView" style="display: none; margin-top: 30px;">
-                <div class="compare-panel">
-                    <h4>编辑前</h4>
-                    <img id="beforePreview" alt="编辑前">
-                </div>
-                <div class="compare-panel">
-                    <h4>编辑后</h4>
-                    <img id="afterPreview" alt="编辑后">
                 </div>
             </div>
         </div>
     </div>
     
     <script>
+        const navItems = document.querySelectorAll('.nav-item');
+        const pages = document.querySelectorAll('.page');
+        
+        function navigateTo(pageId) {
+            navItems.forEach(item => item.classList.remove('active'));
+            pages.forEach(page => page.classList.remove('active'));
+            
+            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+            document.getElementById(`page-${pageId}`).classList.add('active');
+        }
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navigateTo(item.dataset.page);
+            });
+        });
+        
         const uploadArea = document.getElementById('uploadArea');
         const douUploadArea = document.getElementById('douUploadArea');
         const fileInput = document.getElementById('fileInput');
@@ -803,8 +1064,6 @@
         const processBtn = document.getElementById('processBtn');
         const loading = document.getElementById('loading');
         const results = document.getElementById('results');
-        const editor = document.getElementById('editor');
-        const mainCard = document.getElementById('mainCard');
         
         let uploadedFile = null;
         let currentImages = {};
@@ -812,6 +1071,7 @@
         let originalDouData = null;
         let selectedCells = [];
         let mardColors = {};
+        let isMouseDown = false;
         
         fetch('/get-colors')
             .then(res => res.json())
@@ -914,8 +1174,7 @@
             formData.append('api_key', apiKey);
             
             loading.classList.add('show');
-            results.classList.remove('show');
-            editor.classList.remove('show');
+            results.style.display = 'none';
             
             try {
                 const response = await fetch('/process', {
@@ -966,8 +1225,7 @@
                     renderColorList('originalColorCountsList', data.original_color_counts);
                     
                     loading.classList.remove('show');
-                    mainCard.style.display = 'none';
-                    results.classList.add('show');
+                    results.style.display = 'block';
                 } else {
                     alert('处理失败: ' + data.error);
                     loading.classList.remove('show');
@@ -1080,110 +1338,40 @@
         
         document.getElementById('editTemplateBtn').addEventListener('click', () => {
             if (!currentDouData) return;
+            navigateTo('edit-pindou');
             loadDouData(currentDouData);
+        });
+        
+        document.getElementById('createNewTemplateBtn').addEventListener('click', () => {
+            const width = parseInt(document.getElementById('newWidth').value);
+            const height = parseInt(document.getElementById('newHeight').value);
+            
+            if (width < 10 || width > 100 || height < 10 || height > 100) {
+                alert('宽度和高度必须在 10-100 之间');
+                return;
+            }
+            
+            const grid = Array(height).fill(null).map(() => Array(width).fill(null));
+            const douData = {
+                width: width,
+                height: height,
+                grid: grid,
+                color_map: {}
+            };
+            
+            loadDouData(douData);
         });
         
         function loadDouData(douData) {
             currentDouData = douData;
             originalDouData = JSON.parse(JSON.stringify(douData));
             
-            results.classList.remove('show');
-            editor.classList.add('show');
+            document.getElementById('editorContainer').style.display = 'block';
+            document.getElementById('douUploadArea').style.display = 'none';
             
             renderEditorCanvas();
             renderColorPicker();
             renderUsedColors();
-        }
-        
-        function renderUsedColors() {
-            const list = document.getElementById('usedColorsList');
-            list.innerHTML = '';
-            
-            const colorCounts = countColors();
-            const sortedColors = Object.entries(colorCounts).sort((a, b) => b[1] - a[1]);
-            
-            sortedColors.forEach(([code, count]) => {
-                const item = document.createElement('div');
-                item.className = 'used-color-item';
-                item.dataset.code = code;
-                
-                const colorBox = document.createElement('div');
-                colorBox.className = 'used-color-box';
-                const rgb = mardColors[code];
-                colorBox.style.backgroundColor = `rgb(${rgb.join(', ')})`;
-                
-                const codeSpan = document.createElement('span');
-                codeSpan.className = 'used-color-code';
-                codeSpan.textContent = code;
-                
-                const countSpan = document.createElement('span');
-                countSpan.className = 'used-color-count';
-                countSpan.textContent = `${count}颗`;
-                
-                item.appendChild(colorBox);
-                item.appendChild(codeSpan);
-                item.appendChild(countSpan);
-                
-                item.addEventListener('click', () => {
-                    highlightColor(code);
-                });
-                
-                list.appendChild(item);
-            });
-        }
-        
-        function countColors() {
-            const counts = {};
-            const grid = currentDouData.grid;
-            
-            for (let y = 0; y < grid.length; y++) {
-                for (let x = 0; x < grid[y].length; x++) {
-                    const code = grid[y][x];
-                    if (code) {
-                        counts[code] = (counts[code] || 0) + 1;
-                    }
-                }
-            }
-            
-            return counts;
-        }
-        
-        let highlightedColor = null;
-        
-        function highlightColor(code) {
-            clearHighlight();
-            
-            if (highlightedColor === code) {
-                highlightedColor = null;
-                return;
-            }
-            
-            highlightedColor = code;
-            
-            document.querySelectorAll('.used-color-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.dataset.code === code) {
-                    item.classList.add('active');
-                }
-            });
-            
-            document.querySelectorAll('.canvas-cell').forEach(cell => {
-                if (cell.textContent === code) {
-                    cell.classList.add('highlighted');
-                }
-            });
-        }
-        
-        function clearHighlight() {
-            highlightedColor = null;
-            
-            document.querySelectorAll('.used-color-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            document.querySelectorAll('.canvas-cell').forEach(cell => {
-                cell.classList.remove('highlighted');
-            });
         }
         
         function renderEditorCanvas() {
@@ -1195,6 +1383,17 @@
             const w = grid[0].length;
             
             canvas.style.gridTemplateColumns = `repeat(${w}, 1fr)`;
+            
+            const handleCellMouseDown = (x, y) => {
+                isMouseDown = true;
+                toggleCellSelection(x, y);
+            };
+            
+            const handleCellMouseEnter = (x, y) => {
+                if (isMouseDown) {
+                    addCellToSelection(x, y);
+                }
+            };
             
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
@@ -1213,13 +1412,29 @@
                         cell.classList.add('transparent');
                     }
                     
-                    cell.addEventListener('click', () => {
-                        toggleCellSelection(x, y);
+                    cell.addEventListener('mousedown', () => {
+                        handleCellMouseDown(x, y);
+                    });
+                    
+                    cell.addEventListener('mouseenter', () => {
+                        handleCellMouseEnter(x, y);
                     });
                     
                     canvas.appendChild(cell);
                 }
             }
+            
+            canvas.addEventListener('mouseup', () => {
+                isMouseDown = false;
+            });
+            
+            canvas.addEventListener('mouseleave', () => {
+                isMouseDown = false;
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isMouseDown = false;
+            });
         }
         
         function toggleCellSelection(x, y) {
@@ -1231,6 +1446,17 @@
                 selectedCells.splice(idx, 1);
                 cell.classList.remove('selected');
             } else {
+                selectedCells.push(key);
+                cell.classList.add('selected');
+            }
+        }
+        
+        function addCellToSelection(x, y) {
+            const cell = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+            const key = `${x},${y}`;
+            const idx = selectedCells.indexOf(key);
+            
+            if (idx === -1) {
                 selectedCells.push(key);
                 cell.classList.add('selected');
             }
@@ -1444,12 +1670,96 @@
             }
         });
         
-        document.getElementById('backBtn').addEventListener('click', () => {
-            editor.classList.remove('show');
-            results.classList.remove('show');
-            mainCard.style.display = 'block';
-            selectedCells = [];
-        });
+        function renderUsedColors() {
+            const list = document.getElementById('usedColorsList');
+            list.innerHTML = '';
+            
+            const colorCounts = countColors();
+            const sortedColors = Object.entries(colorCounts).sort((a, b) => b[1] - a[1]);
+            
+            sortedColors.forEach(([code, count]) => {
+                const item = document.createElement('div');
+                item.className = 'used-color-item';
+                item.dataset.code = code;
+                
+                const colorBox = document.createElement('div');
+                colorBox.className = 'used-color-box';
+                const rgb = mardColors[code];
+                colorBox.style.backgroundColor = `rgb(${rgb.join(', ')})`;
+                
+                const codeSpan = document.createElement('span');
+                codeSpan.className = 'used-color-code';
+                codeSpan.textContent = code;
+                
+                const countSpan = document.createElement('span');
+                countSpan.className = 'used-color-count';
+                countSpan.textContent = `${count}颗`;
+                
+                item.appendChild(colorBox);
+                item.appendChild(codeSpan);
+                item.appendChild(countSpan);
+                
+                item.addEventListener('click', () => {
+                    highlightColor(code);
+                });
+                
+                list.appendChild(item);
+            });
+        }
+        
+        function countColors() {
+            const counts = {};
+            const grid = currentDouData.grid;
+            
+            for (let y = 0; y < grid.length; y++) {
+                for (let x = 0; x < grid[y].length; x++) {
+                    const code = grid[y][x];
+                    if (code) {
+                        counts[code] = (counts[code] || 0) + 1;
+                    }
+                }
+            }
+            
+            return counts;
+        }
+        
+        let highlightedColor = null;
+        
+        function highlightColor(code) {
+            clearHighlight();
+            
+            if (highlightedColor === code) {
+                highlightedColor = null;
+                return;
+            }
+            
+            highlightedColor = code;
+            
+            document.querySelectorAll('.used-color-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.code === code) {
+                    item.classList.add('active');
+                }
+            });
+            
+            document.querySelectorAll('.canvas-cell').forEach(cell => {
+                if (cell.textContent === code) {
+                    cell.classList.add('highlighted');
+                }
+            });
+        }
+        
+        function clearHighlight() {
+            highlightedColor = null;
+            
+            document.querySelectorAll('.used-color-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.canvas-cell').forEach(cell => {
+                cell.classList.remove('highlighted');
+            });
+        }
     </script>
 </body>
 </html>
