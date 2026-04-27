@@ -166,6 +166,81 @@
             box-shadow: none;
         }
         
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        
+        .canvas-cell.highlighted {
+            outline: 3px solid #ff6b6b;
+            outline-offset: 2px;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { outline-color: #ff6b6b; }
+            50% { outline-color: #ff8787; }
+        }
+        
+        .used-colors-panel {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #eee;
+        }
+        
+        .used-colors-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .used-colors-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .used-color-item {
+            display: flex;
+            align-items: center;
+            padding: 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 2px;
+        }
+        
+        .used-color-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .used-color-item.active {
+            background: #e8f4fd;
+        }
+        
+        .used-color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        .used-color-code {
+            font-weight: 600;
+            color: #333;
+            width: 45px;
+            font-size: 12px;
+        }
+        
+        .used-color-count {
+            color: #666;
+            font-size: 12px;
+            margin-left: auto;
+        }
+        
         .btn-danger {
             background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
         }
@@ -679,7 +754,7 @@
         <div class="card editor" id="editor">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 class="section-title" style="margin: 0;">模板编辑器</h2>
-                <button class="btn btn-secondary" id="backBtn">返回</button>
+                <button class="btn btn-secondary btn-small" id="backBtn">返回</button>
             </div>
             
             <div class="editor-grid">
@@ -691,9 +766,15 @@
                     <h4 style="margin-bottom: 15px;">选择颜色</h4>
                     <div class="color-picker-grid" id="colorPickerGrid"></div>
                     
+                    <div class="used-colors-panel" id="usedColorsPanel">
+                        <div class="used-colors-title">已使用颜色 (点击高亮)</div>
+                        <div class="used-colors-list" id="usedColorsList"></div>
+                    </div>
+                    
                     <div class="editor-actions">
                         <button class="btn btn-danger" id="deleteSelectedBtn">删除选中格点</button>
                         <button class="btn" id="applyColorBtn">应用颜色到选中区域</button>
+                        <button class="btn btn-secondary" id="clearHighlightBtn">清除高亮</button>
                         <button class="btn btn-secondary" id="compareBtn">对比编辑前后</button>
                         <button class="btn" id="downloadEditedDouBtn">下载编辑后的 .dou 文件</button>
                         <button class="btn btn-secondary" id="previewEditedBtn">预览编辑后的图片</button>
@@ -1011,6 +1092,98 @@
             
             renderEditorCanvas();
             renderColorPicker();
+            renderUsedColors();
+        }
+        
+        function renderUsedColors() {
+            const list = document.getElementById('usedColorsList');
+            list.innerHTML = '';
+            
+            const colorCounts = countColors();
+            const sortedColors = Object.entries(colorCounts).sort((a, b) => b[1] - a[1]);
+            
+            sortedColors.forEach(([code, count]) => {
+                const item = document.createElement('div');
+                item.className = 'used-color-item';
+                item.dataset.code = code;
+                
+                const colorBox = document.createElement('div');
+                colorBox.className = 'used-color-box';
+                const rgb = mardColors[code];
+                colorBox.style.backgroundColor = `rgb(${rgb.join(', ')})`;
+                
+                const codeSpan = document.createElement('span');
+                codeSpan.className = 'used-color-code';
+                codeSpan.textContent = code;
+                
+                const countSpan = document.createElement('span');
+                countSpan.className = 'used-color-count';
+                countSpan.textContent = `${count}颗`;
+                
+                item.appendChild(colorBox);
+                item.appendChild(codeSpan);
+                item.appendChild(countSpan);
+                
+                item.addEventListener('click', () => {
+                    highlightColor(code);
+                });
+                
+                list.appendChild(item);
+            });
+        }
+        
+        function countColors() {
+            const counts = {};
+            const grid = currentDouData.grid;
+            
+            for (let y = 0; y < grid.length; y++) {
+                for (let x = 0; x < grid[y].length; x++) {
+                    const code = grid[y][x];
+                    if (code) {
+                        counts[code] = (counts[code] || 0) + 1;
+                    }
+                }
+            }
+            
+            return counts;
+        }
+        
+        let highlightedColor = null;
+        
+        function highlightColor(code) {
+            clearHighlight();
+            
+            if (highlightedColor === code) {
+                highlightedColor = null;
+                return;
+            }
+            
+            highlightedColor = code;
+            
+            document.querySelectorAll('.used-color-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.code === code) {
+                    item.classList.add('active');
+                }
+            });
+            
+            document.querySelectorAll('.canvas-cell').forEach(cell => {
+                if (cell.textContent === code) {
+                    cell.classList.add('highlighted');
+                }
+            });
+        }
+        
+        function clearHighlight() {
+            highlightedColor = null;
+            
+            document.querySelectorAll('.used-color-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.canvas-cell').forEach(cell => {
+                cell.classList.remove('highlighted');
+            });
         }
         
         function renderEditorCanvas() {
@@ -1176,6 +1349,8 @@
             document.querySelectorAll('.canvas-cell').forEach(cell => {
                 cell.classList.remove('selected');
             });
+            
+            renderUsedColors();
         });
         
         document.getElementById('deleteSelectedBtn').addEventListener('click', () => {
@@ -1186,6 +1361,10 @@
             
             selectColor(null);
             document.getElementById('applyColorBtn').click();
+        });
+        
+        document.getElementById('clearHighlightBtn').addEventListener('click', () => {
+            clearHighlight();
         });
         
         document.getElementById('previewEditedBtn').addEventListener('click', async () => {
