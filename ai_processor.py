@@ -1,11 +1,19 @@
-import requests
 import base64
 import io
+import requests
+from volcenginesdkarkruntime import Ark
 
 class AIProcessor:
     def __init__(self, api_key):
         self.api_key = api_key
-        self.base_url = "https://maas-api.bytedance.net/api/text2image"
+        self.client = None
+    
+    def _init_client(self):
+        if self.client is None:
+            self.client = Ark(
+                base_url="https://ark.cn-beijing.volces.com/api/v3",
+                api_key=self.api_key
+            )
     
     def optimize_image(self, image_path, output_path=None):
         """
@@ -14,6 +22,8 @@ class AIProcessor:
         :param output_path: 输出图片路径（可选）
         :return: 优化后的图片对象
         """
+        self._init_client()
+        
         try:
             with open(image_path, 'rb') as f:
                 image_bytes = f.read()
@@ -22,35 +32,25 @@ class AIProcessor:
             
             prompt = "首先选出图像中的主体，若主体存在遮挡，则尝试对前景进行补全。将补全后的主体转化为卡通简洁画风，居中，生成长宽比为1:1的图像"
             
-            request_data = {
-                "model": "doubao-seedream-4-0-250828",
-                "prompt": prompt,
-                "image": image_base64,
-                "image_mode": "Mask",
-                "aspect_ratio": "1:1",
-                "negative_prompt": "模糊, 低质量, 水印, 文字, 拉伸, 变形",
-                "num_samples": 1,
-                "seed": 42,
-                "steps": 30,
-                "cfg_scale": 7.5
-            }
+            response = self.client.images.generate(
+                model="doubao-seedream-4-0-250828",
+                prompt=prompt,
+                image=image_base64,
+                sequential_image_generation="disabled",
+                response_format="url",
+                size="1024x1024",
+                stream=False,
+                watermark=False
+            )
             
-            headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}"
-            }
-            
-            response = requests.post(self.base_url, json=request_data, headers=headers, timeout=60)
-            response.raise_for_status()
-            
-            result = response.json()
-            
-            if result and 'data' in result and len(result['data']) > 0:
-                result_base64 = result['data'][0]['image']
-                result_bytes = base64.b64decode(result_base64)
+            if response and response.data and len(response.data) > 0:
+                image_url = response.data[0].url
+                
+                image_response = requests.get(image_url, timeout=60)
+                image_response.raise_for_status()
                 
                 from PIL import Image
-                result_image = Image.open(io.BytesIO(result_bytes))
+                result_image = Image.open(io.BytesIO(image_response.content))
                 
                 if output_path:
                     result_image.save(output_path)
@@ -59,7 +59,5 @@ class AIProcessor:
             else:
                 raise Exception("AI处理返回结果为空")
                 
-        except requests.exceptions.RequestException as e:
-            raise Exception(f"API请求失败: {str(e)}")
         except Exception as e:
             raise Exception(f"图像处理失败: {str(e)}")
