@@ -1050,7 +1050,28 @@
             transparentBtn.addEventListener('click', () => selectColor(null));
             grid.appendChild(transparentBtn);
             
-            Object.entries(mardColors).forEach(([code, rgb]) => {
+            const sortedColors = Object.entries(mardColors).sort((a, b) => {
+                const codeA = a[0];
+                const codeB = b[0];
+                
+                const letterA = codeA.charAt(0);
+                const letterB = codeB.charAt(0);
+                
+                const letterOrder = 'ABCDEFGHM';
+                const letterIndexA = letterOrder.indexOf(letterA);
+                const letterIndexB = letterOrder.indexOf(letterB);
+                
+                if (letterIndexA !== letterIndexB) {
+                    return letterIndexA - letterIndexB;
+                }
+                
+                const numA = parseInt(codeA.substring(1));
+                const numB = parseInt(codeB.substring(1));
+                
+                return numA - numB;
+            });
+            
+            sortedColors.forEach(([code, rgb]) => {
                 const item = document.createElement('div');
                 item.className = 'color-picker-item';
                 item.style.backgroundColor = `rgb(${rgb.join(', ')})`;
