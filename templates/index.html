@@ -434,27 +434,50 @@
         }
         
         .color-picker-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 6px;
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: auto;
             margin-bottom: 20px;
+            padding-right: 5px;
+        }
+        
+        .color-group {
+            margin-bottom: 15px;
+        }
+        
+        .color-group-header {
+            font-size: 12px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+            padding-left: 5px;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 4px;
+        }
+        
+        .color-group-colors {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
         }
         
         .color-picker-item {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 6px;
             cursor: pointer;
             border: 2px solid transparent;
             transition: all 0.2s;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
         }
         
         .color-picker-item:hover {
             border-color: #667eea;
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
         
         .color-picker-item.selected {
@@ -1047,39 +1070,60 @@
             const transparentBtn = document.createElement('div');
             transparentBtn.className = 'color-picker-item transparent-option';
             transparentBtn.title = '透明/删除';
+            transparentBtn.textContent = '×';
             transparentBtn.addEventListener('click', () => selectColor(null));
             grid.appendChild(transparentBtn);
             
-            const sortedColors = Object.entries(mardColors).sort((a, b) => {
-                const codeA = a[0];
-                const codeB = b[0];
-                
-                const letterA = codeA.charAt(0);
-                const letterB = codeB.charAt(0);
-                
-                const letterOrder = 'ABCDEFGHM';
-                const letterIndexA = letterOrder.indexOf(letterA);
-                const letterIndexB = letterOrder.indexOf(letterB);
-                
-                if (letterIndexA !== letterIndexB) {
-                    return letterIndexA - letterIndexB;
-                }
-                
-                const numA = parseInt(codeA.substring(1));
-                const numB = parseInt(codeB.substring(1));
-                
-                return numA - numB;
+            const letterOrder = 'ABCDEFGHM';
+            const colorGroups = {};
+            
+            letterOrder.split('').forEach(letter => {
+                colorGroups[letter] = [];
             });
             
-            sortedColors.forEach(([code, rgb]) => {
-                const item = document.createElement('div');
-                item.className = 'color-picker-item';
-                item.style.backgroundColor = `rgb(${rgb.join(', ')})`;
-                item.title = code;
-                item.dataset.code = code;
+            Object.entries(mardColors).forEach(([code, rgb]) => {
+                const letter = code.charAt(0);
+                if (colorGroups[letter]) {
+                    colorGroups[letter].push({ code, rgb });
+                }
+            });
+            
+            letterOrder.split('').forEach(letter => {
+                const groupColors = colorGroups[letter];
+                if (groupColors.length === 0) return;
                 
-                item.addEventListener('click', () => selectColor(code));
-                grid.appendChild(item);
+                groupColors.sort((a, b) => {
+                    const numA = parseInt(a.code.substring(1));
+                    const numB = parseInt(b.code.substring(1));
+                    return numA - numB;
+                });
+                
+                const group = document.createElement('div');
+                group.className = 'color-group';
+                
+                const header = document.createElement('div');
+                header.className = 'color-group-header';
+                header.textContent = `${letter}系列 (${groupColors.length}色)`;
+                group.appendChild(header);
+                
+                const colorsContainer = document.createElement('div');
+                colorsContainer.className = 'color-group-colors';
+                
+                groupColors.forEach(({ code, rgb }) => {
+                    const item = document.createElement('div');
+                    item.className = 'color-picker-item';
+                    item.style.backgroundColor = `rgb(${rgb.join(', ')})`;
+                    item.title = code;
+                    item.dataset.code = code;
+                    item.textContent = code;
+                    item.style.color = rgb.reduce((a, b) => a + b) > 382 ? '#000' : '#fff';
+                    
+                    item.addEventListener('click', () => selectColor(code));
+                    colorsContainer.appendChild(item);
+                });
+                
+                group.appendChild(colorsContainer);
+                grid.appendChild(group);
             });
         }
         
