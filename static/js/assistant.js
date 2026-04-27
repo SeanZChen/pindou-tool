@@ -64,9 +64,10 @@ function renderAssistantCanvas() {
     const h = grid.length;
     const w = grid[0].length;
     const cellSize = Math.round(24 * assistantZoom);
+    const gap = Math.max(1, Math.round(1 * assistantZoom));
     
     canvas.style.gridTemplateColumns = `repeat(${w}, ${cellSize}px)`;
-    canvas.style.gap = `${Math.max(1, Math.round(1 * assistantZoom))}px`;
+    canvas.style.gap = `${gap}px`;
     
     const showGrid = document.getElementById('showGrid').checked;
     
@@ -80,14 +81,22 @@ function renderAssistantCanvas() {
             cell.style.height = `${cellSize}px`;
             cell.style.fontSize = `${Math.max(8, Math.round(10 * assistantZoom))}px`;
             
-            if (showGrid && (x % 5 === 0 || y % 5 === 0)) {
-                cell.style.borderColor = '#999';
-                cell.style.borderWidth = '2px';
-                cell.style.borderStyle = 'dashed';
+            if (showGrid) {
+                let borderTop = 'none';
+                let borderLeft = 'none';
+                
+                if (y % 5 === 0) {
+                    borderTop = '2px solid #000';
+                }
+                if (x % 5 === 0) {
+                    borderLeft = '2px solid #000';
+                }
+                
+                cell.style.borderTop = borderTop;
+                cell.style.borderLeft = borderLeft;
             } else {
-                cell.style.borderColor = '';
-                cell.style.borderWidth = '';
-                cell.style.borderStyle = '';
+                cell.style.borderTop = '';
+                cell.style.borderLeft = '';
             }
             
             const code = grid[y][x];
@@ -101,6 +110,51 @@ function renderAssistantCanvas() {
             }
             
             canvas.appendChild(cell);
+        }
+    }
+    
+    if (showGrid) {
+        const gridOverlay = document.createElement('div');
+        gridOverlay.className = 'grid-overlay';
+        gridOverlay.style.position = 'absolute';
+        gridOverlay.style.top = '0';
+        gridOverlay.style.left = '0';
+        gridOverlay.style.right = '0';
+        gridOverlay.style.bottom = '0';
+        gridOverlay.style.pointerEvents = 'none';
+        gridOverlay.style.display = 'grid';
+        gridOverlay.style.gridTemplateColumns = `repeat(${w}, ${cellSize}px)`;
+        gridOverlay.style.gap = `${gap}px`;
+        gridOverlay.style.margin = '20px';
+        
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                const gridCell = document.createElement('div');
+                gridCell.style.width = `${cellSize}px`;
+                gridCell.style.height = `${cellSize}px`;
+                
+                let borderBottom = 'none';
+                let borderRight = 'none';
+                
+                if (y % 5 === 4 || y === h - 1) {
+                    borderBottom = '2px solid #000';
+                }
+                if (x % 5 === 4 || x === w - 1) {
+                    borderRight = '2px solid #000';
+                }
+                
+                gridCell.style.borderBottom = borderBottom;
+                gridCell.style.borderRight = borderRight;
+                gridOverlay.appendChild(gridCell);
+            }
+        }
+        
+        canvas.parentElement.style.position = 'relative';
+        canvas.parentElement.appendChild(gridOverlay);
+    } else {
+        const existingOverlay = canvas.parentElement.querySelector('.grid-overlay');
+        if (existingOverlay) {
+            existingOverlay.remove();
         }
     }
     
