@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify, send_file, render_template
 from flask_cors import CORS
 from pindou_processor import PindouProcessor
+from mard_colors import MARD_221_COLORS
 import os
 import io
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -77,6 +79,7 @@ def process_image():
         
         color_counts = result.get('color_counts', {})
         original_color_counts = result.get('original_color_counts', {})
+        dou_data = result.get('dou_data', {})
         
         return jsonify({
             'success': True,
@@ -85,7 +88,8 @@ def process_image():
             'original_color_counts': original_color_counts,
             'downsampled_size': result.get('downsampled_size', (0, 0)),
             'original_size': result.get('original_size', (0, 0)),
-            'ai_processed': ai_processed
+            'ai_processed': ai_processed,
+            'dou_data': dou_data
         })
     
     except Exception as e:
@@ -119,6 +123,87 @@ def download_image(image_type):
         )
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/download-dou', methods=['POST'])
+def download_dou():
+    data = request.get_json()
+    dou_data = data.get('dou_data')
+    
+    if not dou_data:
+        return jsonify({'error': 'No .dou data'}), 400
+    
+    try:
+        json_str = json.dumps(dou_data, ensure_ascii=False)
+        buf = io.BytesIO(json_str.encode('utf-8'))
+        
+        return send_file(
+            buf,
+            mimetype='application/json',
+            download_name='template.dou',
+            as_attachment=True
+        )
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/dou-to-image', methods=['POST'])
+def dou_to_image():
+    data = request.get_json()
+    dou_data = data.get('dou_data')
+    
+    if not dou_data:
+        return jsonify({'error': 'No .dou data'}), 400
+    
+    try:
+        processor = PindouProcessor()
+        img = processor.dou_to_image(dou_data)
+        
+        buf = io.BytesIO()
+        img.save(buf, format='PNG')
+        buf.seek(0)
+        
+        return jsonify({
+            'success': True,
+            'image_data': buf.getvalue().hex()
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/upload-dou', methods=['POST'])
+def upload_dou():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No file selected'}), 400
+    
+    if not file.filename.endswith('.dou'):
+        return jsonify({'error': 'Only .dou files are allowed'}), 400
+    
+    try:
+        dou_data = json.load(file)
+        
+        processor = PindouProcessor()
+        img = processor.dou_to_image(dou_data)
+        
+        buf = io.BytesIO()
+        img.save(buf, format='PNG')
+        buf.seek(0)
+        
+        return jsonify({
+            'success': True,
+            'image_data': buf.getvalue().hex(),
+            'dou_data': dou_data
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/get-colors', methods=['GET'])
+def get_colors():
+    return jsonify({
+        'success': True,
+        'colors': MARD_221_COLORS
+    })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5001, debug=True)

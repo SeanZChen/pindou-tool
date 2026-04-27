@@ -31,7 +31,7 @@ class AIProcessor:
             image_base64 = base64.b64encode(image_bytes).decode('utf-8')
             image_data_uri = f"data:image/png;base64,{image_base64}"
             
-            prompt = "首先选出图像中的主体，若主体存在遮挡，则尝试对前景进行补全。将补全后的主体转化为卡通简洁画风，居中，大色块，8-bit 画风生成长宽比为1:1的图像"
+            prompt = "首先选出图像中的主体，若主体存在遮挡，则尝试对前景进行补全。将补全后的主体转化为卡通简洁画风，居中，大色块，8-bit 画风，生成长宽比为1:1的图像"
             
             response = self.client.images.generate(
                 model="doubao-seedream-4-0-250828",
@@ -39,7 +39,7 @@ class AIProcessor:
                 image=image_data_uri,
                 sequential_image_generation="disabled",
                 response_format="url",
-                size="1024x1024",
+                size="256x256",
                 stream=False,
                 watermark=False
             )

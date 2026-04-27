@@ -50,6 +50,9 @@ def main():
     result['mosaic'].save(mosaic_path)
     result['color_map'].save(color_map_path)
     
+    dou_path = os.path.join(args.output, "template.dou")
+    processor.save_dou_file(result['dou_data'], dou_path)
+    
     print("\n已保存到文件夹：", args.output)
     
     if ai_processed_path:
@@ -57,6 +60,7 @@ def main():
     
     print(f"  low_res.png - 低分辨率图")
     print(f"  mosaic.png - 马赛克效果原图")
+    print(f"  template.dou - 拼豆模板文件（可编辑）")
     
     if args.simplify:
         original_color_map_path = os.path.join(args.output, "color_map_original.png")

@@ -19,7 +19,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
         
@@ -77,7 +77,7 @@
             color: #999;
         }
         
-        #fileInput {
+        #fileInput, #douFileInput {
             display: none;
         }
         
@@ -104,7 +104,8 @@
         }
         
         .config-item input[type="number"],
-        .config-item input[type="checkbox"] {
+        .config-item input[type="checkbox"],
+        .config-item input[type="password"] {
             padding: 12px;
             border: 2px solid #eee;
             border-radius: 8px;
@@ -112,7 +113,8 @@
             transition: border-color 0.3s;
         }
         
-        .config-item input[type="number"]:focus {
+        .config-item input[type="number"]:focus,
+        .config-item input[type="password"]:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -154,6 +156,20 @@
             transform: none;
         }
         
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            box-shadow: none;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        
         .loading {
             display: none;
             text-align: center;
@@ -184,6 +200,14 @@
         }
         
         .results.show {
+            display: block;
+        }
+        
+        .editor {
+            display: none;
+        }
+        
+        .editor.show {
             display: block;
         }
         
@@ -352,12 +376,142 @@
             display: block;
         }
         
+        .editor-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+        
+        .canvas-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            overflow: auto;
+        }
+        
+        .editor-canvas {
+            display: grid;
+            gap: 1px;
+            background: #ddd;
+            border-radius: 8px;
+            margin: 0 auto;
+        }
+        
+        .canvas-cell {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.1);
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .canvas-cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .canvas-cell.selected {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+        
+        .canvas-cell.transparent {
+            background: #fff;
+            border: 1px dashed #ccc;
+        }
+        
+        .color-picker-panel {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            height: fit-content;
+        }
+        
+        .color-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .color-picker-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .color-picker-item:hover {
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+        
+        .color-picker-item.selected {
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+        }
+        
+        .color-picker-item.transparent-option {
+            background: repeating-linear-gradient(
+                45deg,
+                #fff,
+                #fff 2px,
+                #ddd 2px,
+                #ddd 4px
+            );
+        }
+        
+        .editor-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .compare-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .compare-panel {
+            text-align: center;
+        }
+        
+        .compare-panel img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        
+        .compare-panel h4 {
+            margin-bottom: 10px;
+            color: #666;
+        }
+        
         @media (max-width: 768px) {
             .config-row {
                 grid-template-columns: 1fr;
             }
             
             .images-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .editor-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .compare-view {
                 grid-template-columns: 1fr;
             }
         }
@@ -370,12 +524,20 @@
             <p>将图片转换为国产221色拼豆色卡映射</p>
         </div>
         
-        <div class="card">
+        <div class="card" id="mainCard">
             <div class="upload-area" id="uploadArea">
                 <i>📷</i>
                 <p>点击或拖拽上传图片</p>
                 <small>支持 JPG、PNG 格式</small>
                 <input type="file" id="fileInput" accept="image/*">
+            </div>
+            
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #eee;">
+                <div class="upload-area" id="douUploadArea" style="padding: 20px;">
+                    <i>📄</i>
+                    <p>或上传 .dou 模板文件进行编辑</p>
+                    <input type="file" id="douFileInput" accept=".dou">
+                </div>
             </div>
             
             <div class="config-section">
@@ -471,6 +633,11 @@
                 </div>
             </div>
             
+            <div style="margin-top: 20px;">
+                <button class="btn btn-secondary" id="editTemplateBtn">编辑模板</button>
+                <button class="btn" id="downloadDouBtn">下载 .dou 文件</button>
+            </div>
+            
             <div class="stats-section">
                 <div class="tabs">
                     <button class="tab active" data-tab="colorCounts">颜色统计</button>
@@ -485,19 +652,73 @@
                 </div>
             </div>
         </div>
+        
+        <div class="card editor" id="editor">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 class="section-title" style="margin: 0;">模板编辑器</h2>
+                <button class="btn btn-secondary" id="backBtn">返回</button>
+            </div>
+            
+            <div class="editor-grid">
+                <div class="canvas-container">
+                    <div class="editor-canvas" id="editorCanvas"></div>
+                </div>
+                
+                <div class="color-picker-panel">
+                    <h4 style="margin-bottom: 15px;">选择颜色</h4>
+                    <div class="color-picker-grid" id="colorPickerGrid"></div>
+                    
+                    <div class="editor-actions">
+                        <button class="btn btn-danger" id="deleteSelectedBtn">删除选中格点</button>
+                        <button class="btn" id="applyColorBtn">应用颜色到选中区域</button>
+                        <button class="btn btn-secondary" id="compareBtn">对比编辑前后</button>
+                        <button class="btn" id="downloadEditedDouBtn">下载编辑后的 .dou 文件</button>
+                        <button class="btn btn-secondary" id="previewEditedBtn">预览编辑后的图片</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="compare-view" id="compareView" style="display: none; margin-top: 30px;">
+                <div class="compare-panel">
+                    <h4>编辑前</h4>
+                    <img id="beforePreview" alt="编辑前">
+                </div>
+                <div class="compare-panel">
+                    <h4>编辑后</h4>
+                    <img id="afterPreview" alt="编辑后">
+                </div>
+            </div>
+        </div>
     </div>
     
     <script>
         const uploadArea = document.getElementById('uploadArea');
+        const douUploadArea = document.getElementById('douUploadArea');
         const fileInput = document.getElementById('fileInput');
+        const douFileInput = document.getElementById('douFileInput');
         const processBtn = document.getElementById('processBtn');
         const loading = document.getElementById('loading');
         const results = document.getElementById('results');
+        const editor = document.getElementById('editor');
+        const mainCard = document.getElementById('mainCard');
         
         let uploadedFile = null;
         let currentImages = {};
+        let currentDouData = null;
+        let originalDouData = null;
+        let selectedCells = [];
+        let mardColors = {};
+        
+        fetch('/get-colors')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    mardColors = data.colors;
+                }
+            });
         
         uploadArea.addEventListener('click', () => fileInput.click());
+        douUploadArea.addEventListener('click', () => douFileInput.click());
         
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -523,6 +744,12 @@
             }
         });
         
+        douFileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleDouFile(e.target.files[0]);
+            }
+        });
+        
         function handleFile(file) {
             if (!file.type.startsWith('image/')) {
                 alert('请上传图片文件');
@@ -535,6 +762,24 @@
                 <p>已选择: ${file.name}</p>
                 <small>点击更换图片</small>
             `;
+        }
+        
+        function handleDouFile(file) {
+            if (!file.name.endsWith('.dou')) {
+                alert('请上传 .dou 文件');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const douData = JSON.parse(e.target.result);
+                    loadDouData(douData);
+                } catch (err) {
+                    alert('无效的 .dou 文件');
+                }
+            };
+            reader.readAsText(file);
         }
         
         document.getElementById('useAI').addEventListener('change', () => {
@@ -566,6 +811,7 @@
             
             loading.classList.add('show');
             results.classList.remove('show');
+            editor.classList.remove('show');
             
             try {
                 const response = await fetch('/process', {
@@ -577,6 +823,8 @@
                 
                 if (data.success) {
                     currentImages = data.images;
+                    currentDouData = data.dou_data;
+                    originalDouData = JSON.parse(JSON.stringify(data.dou_data));
                     
                     document.getElementById('originalSize').textContent = 
                         `${data.original_size[0]} × ${data.original_size[1]}`;
@@ -614,6 +862,7 @@
                     renderColorList('originalColorCountsList', data.original_color_counts);
                     
                     loading.classList.remove('show');
+                    mainCard.style.display = 'none';
                     results.classList.add('show');
                 } else {
                     alert('处理失败: ' + data.error);
@@ -649,68 +898,8 @@
         }
         
         function getColorFromCode(code) {
-            const mardColors = {
-                'A1': (255, 255, 255), 'A2': (255, 253, 208), 'A3': (255, 255, 204), 'A4': (255, 255, 153),
-                'A5': (255, 255, 0), 'A6': (255, 238, 0), 'A7': (255, 204, 0), 'A8': (255, 178, 0),
-                'A9': (255, 153, 91), 'A10': (255, 153, 0), 'A11': (255, 128, 0), 'A12': (254, 159, 114),
-                'A13': (255, 102, 0), 'A14': (255, 77, 0), 'A15': (255, 51, 0), 'A16': (255, 0, 0),
-                'A17': (255, 0, 68), 'A18': (255, 0, 128), 'A19': (212, 208, 200), 'A20': (240, 240, 240),
-                'A21': (192, 192, 192), 'A22': (128, 128, 128), 'A23': (64, 64, 64), 'A24': (32, 32, 32),
-                'A25': (0, 0, 0), 'A26': (255, 255, 255),
-                'B1': (0, 153, 0), 'B2': (0, 128, 0), 'B3': (0, 102, 0), 'B4': (0, 77, 0),
-                'B5': (0, 51, 0), 'B6': (51, 153, 51), 'B7': (102, 204, 102), 'B8': (153, 255, 153),
-                'B9': (204, 255, 204), 'B10': (0, 204, 0), 'B11': (0, 255, 0), 'B12': (51, 255, 51),
-                'B13': (102, 255, 102), 'B14': (153, 255, 153), 'B15': (192, 224, 192), 'B16': (152, 192, 152),
-                'B17': (102, 153, 102), 'B18': (77, 115, 77), 'B19': (192, 192, 128), 'B20': (153, 153, 102),
-                'B21': (128, 128, 64), 'B22': (102, 102, 51), 'B23': (77, 77, 38), 'B24': (255, 255, 153),
-                'B25': (255, 255, 102), 'B26': (255, 255, 51), 'B27': (204, 204, 0), 'B28': (153, 153, 0),
-                'B29': (102, 102, 0), 'B30': (77, 77, 0), 'B31': (51, 51, 0), 'B32': (255, 255, 204),
-                'C1': (0, 0, 153), 'C2': (0, 0, 128), 'C3': (0, 0, 102), 'C4': (0, 0, 77),
-                'C5': (0, 0, 51), 'C6': (0, 0, 204), 'C7': (0, 0, 255), 'C8': (51, 51, 255),
-                'C9': (102, 102, 255), 'C10': (153, 153, 255), 'C11': (204, 204, 255), 'C12': (0, 51, 102),
-                'C13': (0, 102, 204), 'C14': (0, 153, 255), 'C15': (51, 153, 255), 'C16': (102, 204, 255),
-                'C17': (153, 204, 255), 'C18': (204, 224, 255), 'C19': (152, 192, 208), 'C20': (102, 153, 179),
-                'C21': (77, 115, 139), 'C22': (51, 77, 102), 'C23': (38, 58, 77), 'C24': (0, 51, 153),
-                'C25': (0, 102, 153), 'C26': (0, 153, 204), 'C27': (51, 179, 204), 'C28': (102, 204, 224),
-                'C29': (153, 224, 238),
-                'D1': (102, 0, 153), 'D2': (77, 0, 115), 'D3': (51, 0, 77), 'D4': (153, 0, 204),
-                'D5': (204, 0, 255), 'D6': (153, 51, 255), 'D7': (204, 102, 255), 'D8': (238, 153, 255),
-                'D9': (255, 153, 255), 'D10': (204, 153, 204), 'D11': (153, 102, 153), 'D12': (128, 64, 128),
-                'D13': (102, 51, 102), 'D14': (77, 38, 77), 'D15': (255, 204, 255), 'D16': (255, 153, 204),
-                'D17': (255, 102, 153), 'D18': (255, 51, 102), 'D19': (204, 51, 102), 'D20': (153, 38, 77),
-                'D21': (192, 176, 192), 'D22': (152, 136, 152), 'D23': (115, 102, 115), 'D24': (77, 68, 77),
-                'D25': (51, 45, 51), 'D26': (238, 204, 238),
-                'E1': (255, 102, 153), 'E2': (255, 51, 102), 'E3': (255, 0, 102), 'E4': (255, 0, 51),
-                'E5': (255, 153, 179), 'E6': (255, 102, 153), 'E7': (255, 51, 102), 'E8': (255, 0, 102),
-                'E9': (204, 0, 82), 'E10': (153, 0, 62), 'E11': (255, 179, 179), 'E12': (255, 128, 128),
-                'E13': (255, 77, 77), 'E14': (204, 51, 51), 'E15': (153, 38, 38), 'E16': (102, 25, 25),
-                'E17': (255, 204, 204), 'E18': (204, 153, 153), 'E19': (153, 102, 102), 'E20': (102, 51, 51),
-                'E21': (77, 38, 38), 'E22': (51, 25, 25), 'E23': (240, 192, 192), 'E24': (208, 152, 152),
-                'F1': (153, 77, 0), 'F2': (102, 51, 0), 'F3': (77, 38, 0), 'F4': (204, 102, 0),
-                'F5': (255, 128, 0), 'F6': (255, 178, 102), 'F7': (255, 204, 153), 'F8': (255, 224, 204),
-                'F9': (204, 153, 102), 'F10': (153, 115, 77), 'F11': (102, 77, 51), 'F12': (77, 58, 38),
-                'F13': (51, 38, 25), 'F14': (255, 153, 51), 'F15': (255, 178, 102), 'F16': (255, 204, 153),
-                'F17': (204, 178, 153), 'F18': (153, 136, 115), 'F19': (102, 89, 77), 'F20': (77, 68, 58),
-                'F21': (51, 45, 38), 'F22': (153, 102, 51), 'F23': (204, 153, 102), 'F24': (153, 102, 77),
-                'F25': (102, 68, 51),
-                'G1': (255, 204, 153), 'G2': (255, 178, 128), 'G3': (255, 153, 102), 'G4': (204, 128, 77),
-                'G5': (153, 102, 51), 'G6': (128, 82, 38), 'G7': (102, 68, 38), 'G8': (255, 224, 178),
-                'G9': (255, 192, 144), 'G10': (255, 166, 115), 'G11': (204, 153, 115), 'G12': (153, 115, 82),
-                'G13': (128, 96, 64), 'G14': (102, 77, 51), 'G15': (77, 58, 38), 'G16': (51, 38, 25),
-                'G17': (255, 238, 204), 'G18': (255, 224, 178), 'G19': (255, 204, 153), 'G20': (204, 178, 136),
-                'G21': (153, 136, 102),
-                'H1': (255, 255, 255), 'H2': (245, 245, 245), 'H3': (182, 177, 186), 'H4': (160, 157, 162),
-                'H5': (128, 128, 128), 'H6': (102, 102, 102), 'H7': (0, 0, 0), 'H8': (204, 204, 204),
-                'H9': (178, 178, 178), 'H10': (153, 153, 153), 'H11': (128, 128, 128), 'H12': (102, 102, 102),
-                'H13': (77, 77, 77), 'H14': (51, 51, 51), 'H15': (26, 26, 26), 'H16': (45, 38, 35),
-                'H17': (77, 68, 62), 'H18': (102, 96, 89), 'H19': (128, 122, 115), 'H20': (153, 147, 140),
-                'H21': (178, 172, 166), 'H22': (204, 198, 192), 'H23': (229, 223, 217),
-                'M1': (255, 204, 0), 'M2': (204, 153, 0), 'M3': (153, 102, 0), 'M4': (102, 77, 0),
-                'M5': (77, 58, 0), 'M6': (255, 153, 0), 'M7': (255, 102, 0), 'M8': (204, 77, 0),
-                'M9': (153, 51, 0), 'M10': (102, 38, 0), 'M11': (255, 0, 0), 'M12': (204, 0, 0),
-                'M13': (153, 0, 0), 'M14': (102, 0, 0), 'M15': (77, 0, 0)
-            };
-            return mardColors[code] || '(255, 255, 255)';
+            const rgb = mardColors[code];
+            return rgb ? rgb.join(', ') : '255, 255, 255';
         }
         
         document.querySelectorAll('.download-btn').forEach(btn => {
@@ -748,6 +937,30 @@
             });
         });
         
+        document.getElementById('downloadDouBtn').addEventListener('click', async () => {
+            if (!currentDouData) return;
+            
+            try {
+                const response = await fetch('/download-dou', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ dou_data: currentDouData })
+                });
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'template.dou';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('下载失败: ' + error.message);
+            }
+        });
+        
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -759,6 +972,239 @@
                     tabContent.classList.add('active');
                 }
             });
+        });
+        
+        document.getElementById('editTemplateBtn').addEventListener('click', () => {
+            if (!currentDouData) return;
+            loadDouData(currentDouData);
+        });
+        
+        function loadDouData(douData) {
+            currentDouData = douData;
+            originalDouData = JSON.parse(JSON.stringify(douData));
+            
+            results.classList.remove('show');
+            editor.classList.add('show');
+            
+            renderEditorCanvas();
+            renderColorPicker();
+        }
+        
+        function renderEditorCanvas() {
+            const canvas = document.getElementById('editorCanvas');
+            canvas.innerHTML = '';
+            
+            const grid = currentDouData.grid;
+            const h = grid.length;
+            const w = grid[0].length;
+            
+            canvas.style.gridTemplateColumns = `repeat(${w}, 1fr)`;
+            
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'canvas-cell';
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+                    
+                    const code = grid[y][x];
+                    if (code) {
+                        const rgb = mardColors[code];
+                        cell.style.backgroundColor = `rgb(${rgb.join(', ')})`;
+                        cell.textContent = code;
+                        cell.style.color = rgb.reduce((a, b) => a + b) > 382 ? '#000' : '#fff';
+                    } else {
+                        cell.classList.add('transparent');
+                    }
+                    
+                    cell.addEventListener('click', () => {
+                        toggleCellSelection(x, y);
+                    });
+                    
+                    canvas.appendChild(cell);
+                }
+            }
+        }
+        
+        function toggleCellSelection(x, y) {
+            const cell = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+            const key = `${x},${y}`;
+            const idx = selectedCells.indexOf(key);
+            
+            if (idx > -1) {
+                selectedCells.splice(idx, 1);
+                cell.classList.remove('selected');
+            } else {
+                selectedCells.push(key);
+                cell.classList.add('selected');
+            }
+        }
+        
+        function renderColorPicker() {
+            const grid = document.getElementById('colorPickerGrid');
+            grid.innerHTML = '';
+            
+            const transparentBtn = document.createElement('div');
+            transparentBtn.className = 'color-picker-item transparent-option';
+            transparentBtn.title = '透明/删除';
+            transparentBtn.addEventListener('click', () => selectColor(null));
+            grid.appendChild(transparentBtn);
+            
+            Object.entries(mardColors).forEach(([code, rgb]) => {
+                const item = document.createElement('div');
+                item.className = 'color-picker-item';
+                item.style.backgroundColor = `rgb(${rgb.join(', ')})`;
+                item.title = code;
+                item.dataset.code = code;
+                
+                item.addEventListener('click', () => selectColor(code));
+                grid.appendChild(item);
+            });
+        }
+        
+        let selectedColor = null;
+        
+        function selectColor(code) {
+            document.querySelectorAll('.color-picker-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            if (code) {
+                document.querySelector(`[data-code="${code}"]`).classList.add('selected');
+            } else {
+                document.querySelector('.transparent-option').classList.add('selected');
+            }
+            selectedColor = code;
+        }
+        
+        document.getElementById('applyColorBtn').addEventListener('click', () => {
+            if (selectedCells.length === 0) {
+                alert('请先选择要编辑的格点');
+                return;
+            }
+            
+            selectedCells.forEach(key => {
+                const [x, y] = key.split(',').map(Number);
+                currentDouData.grid[y][x] = selectedColor;
+                
+                if (selectedColor) {
+                    if (!currentDouData.color_map[selectedColor]) {
+                        currentDouData.color_map[selectedColor] = mardColors[selectedColor];
+                    }
+                }
+                
+                const cell = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+                if (selectedColor) {
+                    const rgb = mardColors[selectedColor];
+                    cell.style.backgroundColor = `rgb(${rgb.join(', ')})`;
+                    cell.textContent = selectedColor;
+                    cell.style.color = rgb.reduce((a, b) => a + b) > 382 ? '#000' : '#fff';
+                    cell.classList.remove('transparent');
+                } else {
+                    cell.style.backgroundColor = '#fff';
+                    cell.textContent = '';
+                    cell.classList.add('transparent');
+                }
+            });
+            
+            selectedCells = [];
+            document.querySelectorAll('.canvas-cell').forEach(cell => {
+                cell.classList.remove('selected');
+            });
+        });
+        
+        document.getElementById('deleteSelectedBtn').addEventListener('click', () => {
+            if (selectedCells.length === 0) {
+                alert('请先选择要删除的格点');
+                return;
+            }
+            
+            selectColor(null);
+            document.getElementById('applyColorBtn').click();
+        });
+        
+        document.getElementById('previewEditedBtn').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/dou-to-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ dou_data: currentDouData })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const previewWindow = window.open();
+                    previewWindow.document.write(`<img src="data:image/png;base64,${hexToBase64(data.image_data)}" style="max-width: 100%;">`);
+                } else {
+                    alert('预览失败: ' + data.error);
+                }
+            } catch (error) {
+                alert('预览失败: ' + error.message);
+            }
+        });
+        
+        document.getElementById('downloadEditedDouBtn').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/download-dou', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ dou_data: currentDouData })
+                });
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'template_edited.dou';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('下载失败: ' + error.message);
+            }
+        });
+        
+        document.getElementById('compareBtn').addEventListener('click', async () => {
+            const compareView = document.getElementById('compareView');
+            
+            if (compareView.style.display === 'none' || compareView.style.display === '') {
+                try {
+                    const originalResponse = await fetch('/dou-to-image', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ dou_data: originalDouData })
+                    });
+                    const originalData = await originalResponse.json();
+                    
+                    const editedResponse = await fetch('/dou-to-image', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ dou_data: currentDouData })
+                    });
+                    const editedData = await editedResponse.json();
+                    
+                    if (originalData.success && editedData.success) {
+                        document.getElementById('beforePreview').src = 
+                            'data:image/png;base64,' + hexToBase64(originalData.image_data);
+                        document.getElementById('afterPreview').src = 
+                            'data:image/png;base64,' + hexToBase64(editedData.image_data);
+                        compareView.style.display = 'grid';
+                    }
+                } catch (error) {
+                    alert('对比失败: ' + error.message);
+                }
+            } else {
+                compareView.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('backBtn').addEventListener('click', () => {
+            editor.classList.remove('show');
+            results.classList.remove('show');
+            mainCard.style.display = 'block';
+            selectedCells = [];
         });
     </script>
 </body>

@@ -1,5 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
 import math
+import json
 from mard_colors import MARD_221_COLORS
 
 # TODO: [Smart Mode] 添加 AI 接口所需的依赖
@@ -228,6 +229,8 @@ class PindouProcessor:
         img_result = self.restore_mosaic(img_low_scale, ori_w, ori_h)
         img_labeled = self.create_color_mapped_image(img_low_scale, color_map, color_counts=color_counts, high_res_short_edge=high_res_short_edge)
         
+        dou_data = self.create_dou_data(color_map, img_low_scale.size)
+        
         return {
             'low_res': img_low_scale,
             'mosaic': img_result,
@@ -236,5 +239,121 @@ class PindouProcessor:
             'original_size': (ori_w, ori_h),
             'downsampled_size': img_low_scale.size,
             'original_color_map': original_color_map_img,
-            'original_color_counts': original_color_counts
+            'original_color_counts': original_color_counts,
+            'dou_data': dou_data
         }
+    
+    def create_dou_data(self, color_map, size):
+        w, h = size
+        grid = [[None for _ in range(w)] for _ in range(h)]
+        
+        for (x, y), info in color_map.items():
+            grid[y][x] = info['code']
+        
+        used_colors = {}
+        for (x, y), info in color_map.items():
+            code = info['code']
+            if code not in used_colors:
+                used_colors[code] = list(info['mapped'])
+        
+        return {
+            'width': w,
+            'height': h,
+            'grid': grid,
+            'color_map': used_colors
+        }
+    
+    def save_dou_file(self, dou_data, file_path):
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(dou_data, f, ensure_ascii=False, indent=2)
+    
+    def load_dou_file(self, file_path):
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    
+    def dou_to_image(self, dou_data, high_res_short_edge=4096):
+        w = dou_data['width']
+        h = dou_data['height']
+        grid = dou_data['grid']
+        color_map = dou_data.get('color_map', {})
+        
+        if high_res_short_edge > 0:
+            min_dim = min(w, h)
+            cell_size = high_res_short_edge // min_dim
+        else:
+            cell_size = 20
+        
+        stats_height = 0
+        color_counts = {}
+        for row in grid:
+            for code in row:
+                if code:
+                    color_counts[code] = color_counts.get(code, 0) + 1
+        
+        if color_counts:
+            stats_height = (len(color_counts) // 8 + 1) * 25 + 20
+        
+        img_out = Image.new('RGBA', (w * cell_size, h * cell_size + stats_height), color=(255, 255, 255, 255))
+        draw = ImageDraw.Draw(img_out)
+        
+        font_size = max(8, min(12, cell_size // 3))
+        try:
+            font = ImageFont.truetype('Arial.ttf', font_size)
+        except:
+            font = ImageFont.load_default()
+        
+        for y in range(h):
+            for x in range(w):
+                code = grid[y][x]
+                if code:
+                    mapped_rgb = color_map.get(code, (255, 255, 255))
+                    if isinstance(mapped_rgb, list):
+                        mapped_rgb = tuple(mapped_rgb)
+                    
+                    x_start = x * cell_size
+                    y_start = y * cell_size
+                    
+                    draw.rectangle([x_start, y_start, x_start + cell_size - 1, y_start + cell_size - 1], 
+                                  fill=mapped_rgb + (255,) if len(mapped_rgb) == 3 else mapped_rgb, 
+                                  outline=(128, 128, 128), width=1)
+                    
+                    text_bbox = draw.textbbox((0, 0), code, font=font)
+                    text_w = text_bbox[2] - text_bbox[0]
+                    text_h = text_bbox[3] - text_bbox[1]
+                    text_x = x_start + (cell_size - text_w) // 2
+                    text_y = y_start + (cell_size - text_h) // 2
+                    
+                    if len(mapped_rgb) >= 3:
+                        fill_color = (0, 0, 0) if sum(mapped_rgb[:3]) > 382 else (255, 255, 255)
+                    else:
+                        fill_color = (0, 0, 0)
+                    draw.text((text_x, text_y), code, fill=fill_color, font=font)
+        
+        if color_counts:
+            draw.text((10, h * cell_size + 5), "色块统计：", fill=(0, 0, 0), font=font)
+            
+            sorted_colors = sorted(color_counts.items(), key=lambda x: (-x[1], x[0]))
+            row = 0
+            col = 0
+            
+            for code, count in sorted_colors:
+                x_pos = 10 + col * 100
+                y_pos = h * cell_size + 20 + row * 20
+                
+                color_rgb = color_map.get(code, (255, 255, 255))
+                if isinstance(color_rgb, list):
+                    color_rgb = tuple(color_rgb)
+                
+                draw.rectangle([x_pos, y_pos, x_pos + 16, y_pos + 16], 
+                              fill=color_rgb + (255,) if len(color_rgb) == 3 else color_rgb, 
+                              outline=(128, 128, 128), width=1)
+                
+                text = f"{code}: {count}"
+                draw.text((x_pos + 20, y_pos), text, fill=(0, 0, 0), font=font)
+                
+                col += 1
+                if col >= 8:
+                    col = 0
+                    row += 1
+        
+        return img_out
