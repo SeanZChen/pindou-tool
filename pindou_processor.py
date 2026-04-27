@@ -27,6 +27,9 @@ class PindouProcessor:
         closest_rgb = (255, 255, 255)
         
         for code, rgb in self.colors.items():
+            if code == 'H1':
+                continue
+            
             dist = self.color_distance(pixel_rgb, rgb)
             if dist < min_distance:
                 min_distance = dist
