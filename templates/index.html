@@ -502,6 +502,10 @@
             justify-content: center;
             font-size: 10px;
             font-weight: bold;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         
         .canvas-cell:hover {
@@ -1016,6 +1020,7 @@
                             <div class="editor-actions">
                                 <button class="btn btn-danger" id="deleteSelectedBtn">删除选中格点</button>
                                 <button class="btn" id="applyColorBtn">应用颜色到选中区域</button>
+                                <button class="btn btn-secondary" id="eraserBtn">橡皮擦</button>
                                 <button class="btn btn-secondary" id="clearHighlightBtn">清除高亮</button>
                                 <button class="btn btn-secondary" id="compareBtn">对比编辑前后</button>
                                 <button class="btn" id="downloadEditedDouBtn">下载编辑后的 .dou 文件</button>
@@ -1072,6 +1077,7 @@
         let selectedCells = [];
         let mardColors = {};
         let isMouseDown = false;
+        let isEraserMode = false;
         
         fetch('/get-colors')
             .then(res => res.json())
@@ -1386,12 +1392,20 @@
             
             const handleCellMouseDown = (x, y) => {
                 isMouseDown = true;
-                toggleCellSelection(x, y);
+                if (isEraserMode) {
+                    removeCellFromSelection(x, y);
+                } else {
+                    addCellToSelection(x, y);
+                }
             };
             
             const handleCellMouseEnter = (x, y) => {
                 if (isMouseDown) {
-                    addCellToSelection(x, y);
+                    if (isEraserMode) {
+                        removeCellFromSelection(x, y);
+                    } else {
+                        addCellToSelection(x, y);
+                    }
                 }
             };
             
@@ -1459,6 +1473,17 @@
             if (idx === -1) {
                 selectedCells.push(key);
                 cell.classList.add('selected');
+            }
+        }
+        
+        function removeCellFromSelection(x, y) {
+            const cell = document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+            const key = `${x},${y}`;
+            const idx = selectedCells.indexOf(key);
+            
+            if (idx !== -1) {
+                selectedCells.splice(idx, 1);
+                cell.classList.remove('selected');
             }
         }
         
@@ -1535,6 +1560,11 @@
             
             if (code) {
                 document.querySelector(`[data-code="${code}"]`).classList.add('selected');
+                isEraserMode = false;
+                const btn = document.getElementById('eraserBtn');
+                btn.style.background = '#f0f0f0';
+                btn.style.color = '#666';
+                btn.textContent = '橡皮擦';
             } else {
                 document.querySelector('.transparent-option').classList.add('selected');
             }
@@ -1587,6 +1617,20 @@
             
             selectColor(null);
             document.getElementById('applyColorBtn').click();
+        });
+        
+        document.getElementById('eraserBtn').addEventListener('click', () => {
+            isEraserMode = !isEraserMode;
+            const btn = document.getElementById('eraserBtn');
+            if (isEraserMode) {
+                btn.style.background = '#e74c3c';
+                btn.style.color = '#fff';
+                btn.textContent = '橡皮擦 (开启)';
+            } else {
+                btn.style.background = '#f0f0f0';
+                btn.style.color = '#666';
+                btn.textContent = '橡皮擦';
+            }
         });
         
         document.getElementById('clearHighlightBtn').addEventListener('click', () => {
