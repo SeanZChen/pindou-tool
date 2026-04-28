@@ -122,15 +122,12 @@ function renderAssistantCanvas() {
         const gridOverlay = document.createElement('div');
         gridOverlay.className = 'grid-overlay';
         gridOverlay.style.position = 'absolute';
-        gridOverlay.style.top = '0';
-        gridOverlay.style.left = '0';
-        gridOverlay.style.right = '0';
-        gridOverlay.style.bottom = '0';
+        gridOverlay.style.top = canvas.offsetTop + 'px';
+        gridOverlay.style.left = canvas.offsetLeft + 'px';
         gridOverlay.style.pointerEvents = 'none';
         gridOverlay.style.display = 'grid';
         gridOverlay.style.gridTemplateColumns = `repeat(${w}, ${cellSize}px)`;
         gridOverlay.style.gap = `${gap}px`;
-        gridOverlay.style.margin = '20px';
         
         for (let y = 0; y < h; y++) {
             for (let x = 0; x < w; x++) {

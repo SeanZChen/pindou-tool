@@ -21,12 +21,64 @@ function getMardColors() {
     return mardColors;
 }
 
-function downloadFile(content, filename, mimeType = 'application/octet-stream') {
+async function downloadFile(content, defaultFilename, mimeType = 'application/octet-stream') {
     const blob = new Blob([content], { type: mimeType });
+    
+    if ('showSaveFilePicker' in window) {
+        try {
+            const handle = await window.showSaveFilePicker({
+                suggestedName: defaultFilename,
+                types: [{
+                    description: '文件',
+                    accept: { [mimeType]: ['.*'] }
+                }]
+            });
+            const writable = await handle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+            return;
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                console.error('保存失败:', err);
+            }
+        }
+    }
+    
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename;
+    a.download = defaultFilename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+async function downloadBlob(blob, defaultFilename, mimeType = 'application/octet-stream') {
+    if ('showSaveFilePicker' in window) {
+        try {
+            const handle = await window.showSaveFilePicker({
+                suggestedName: defaultFilename,
+                types: [{
+                    description: '文件',
+                    accept: { [mimeType]: ['.*'] }
+                }]
+            });
+            const writable = await handle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+            return;
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                console.error('保存失败:', err);
+            }
+        }
+    }
+    
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = defaultFilename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

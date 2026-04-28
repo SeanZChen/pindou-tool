@@ -424,14 +424,7 @@ document.getElementById('downloadEditedDouBtn').addEventListener('click', async 
         });
         
         const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'template_edited.dou';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        await downloadBlob(blob, 'template_edited.dou', 'application/json');
     } catch (error) {
         alert('下载失败: ' + error.message);
     }

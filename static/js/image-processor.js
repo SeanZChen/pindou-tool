@@ -180,14 +180,7 @@ document.querySelectorAll('.download-btn').forEach(btn => {
             });
             
             const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = defaultFilenames[type] || 'image.png';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
+            await downloadBlob(blob, defaultFilenames[type] || 'image.png', 'image/png');
         } catch (error) {
             alert('下载失败: ' + error.message);
         }
@@ -205,14 +198,7 @@ document.getElementById('downloadDouBtn').addEventListener('click', async () => 
         });
         
         const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'template.dou';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        await downloadBlob(blob, 'template.dou', 'application/json');
     } catch (error) {
         alert('下载失败: ' + error.message);
     }
