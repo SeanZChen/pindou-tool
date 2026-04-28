@@ -525,10 +525,7 @@ document.getElementById('previewEditedBtn').addEventListener('click', async () =
                         </div>
                     </div>
                     <script>
-                        function getMardColors() {
-                            return ${JSON.stringify(getMardColors())};
-                        }
-                        
+                        const colors = ${JSON.stringify(getMardColors())};
                         const grid = ${JSON.stringify(editorDouData.grid)};
                         const h = grid.length;
                         const w = grid[0].length;
@@ -565,7 +562,6 @@ document.getElementById('previewEditedBtn').addEventListener('click', async () =
                         
                         const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
                         const colorGrid = document.getElementById('colorGrid');
-                        const colors = getMardColors();
                         
                         sorted.forEach(([code, count]) => {
                             const rgb = colors[code];
