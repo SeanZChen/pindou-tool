@@ -563,16 +563,29 @@ document.getElementById('previewEditedBtn').addEventListener('click', async () =
                         const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
                         const colorGrid = document.getElementById('colorGrid');
                         
-                        sorted.forEach(([code, count]) => {
-                            const rgb = colors[code];
-                            const item = document.createElement('div');
-                            item.className = 'color-item';
-                            item.innerHTML = `
-                                <div class="color-box" style="background-color: rgb(${rgb.join(',')})"></div>
-                                <span class="color-code">${code}</span>
-                                <span class="color-count">${count}颗</span>
-                            `;
-                            colorGrid.appendChild(item);
+                        sorted.forEach(function(item) {
+                            var code = item[0];
+                            var count = item[1];
+                            var rgb = colors[code];
+                            var div = document.createElement('div');
+                            div.className = 'color-item';
+                            
+                            var box = document.createElement('div');
+                            box.className = 'color-box';
+                            box.style.backgroundColor = 'rgb(' + rgb.join(',') + ')';
+                            
+                            var codeSpan = document.createElement('span');
+                            codeSpan.className = 'color-code';
+                            codeSpan.textContent = code;
+                            
+                            var countSpan = document.createElement('span');
+                            countSpan.className = 'color-count';
+                            countSpan.textContent = count + '颗';
+                            
+                            div.appendChild(box);
+                            div.appendChild(codeSpan);
+                            div.appendChild(countSpan);
+                            colorGrid.appendChild(div);
                         });
                     </script>
                 </body>
