@@ -58,6 +58,11 @@ function renderAssistantCanvas() {
     const canvas = document.getElementById('assistantCanvas');
     canvas.innerHTML = '';
     
+    const existingOverlay = canvas.parentElement.querySelector('.grid-overlay');
+    if (existingOverlay) {
+        existingOverlay.remove();
+    }
+    
     if (!assistantDouData) return;
     
     const grid = assistantDouData.grid;

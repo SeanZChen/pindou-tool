@@ -416,27 +416,25 @@ document.getElementById('previewEditedBtn').addEventListener('click', async () =
 });
 
 document.getElementById('downloadEditedDouBtn').addEventListener('click', async () => {
-    openDownloadModal('template_edited', 'dou', async (fullFilename) => {
-        try {
-            const response = await fetch('/download-dou', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ dou_data: editorDouData })
-            });
-            
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fullFilename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            alert('下载失败: ' + error.message);
-        }
-    });
+    try {
+        const response = await fetch('/download-dou', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dou_data: editorDouData })
+        });
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'template_edited.dou';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        alert('下载失败: ' + error.message);
+    }
 });
 
 document.getElementById('compareBtn').addEventListener('click', async () => {

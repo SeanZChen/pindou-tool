@@ -166,52 +166,24 @@ document.querySelectorAll('.download-btn').forEach(btn => {
         if (!imageData) return;
         
         const defaultFilenames = {
-            'low_res': '低分辨率图',
-            'mosaic': '马赛克效果',
-            'color_map': '颜色映射图',
-            'original_color_map': '简化前颜色映射图'
+            'low_res': '低分辨率图.png',
+            'mosaic': '马赛克效果.png',
+            'color_map': '颜色映射图.png',
+            'original_color_map': '简化前颜色映射图.png'
         };
         
-        openDownloadModal(defaultFilenames[type] || 'image', 'png', async (fullFilename) => {
-            try {
-                const response = await fetch('/download/' + type, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ image_data: imageData })
-                });
-                
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = fullFilename;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-            } catch (error) {
-                alert('下载失败: ' + error.message);
-            }
-        });
-    });
-});
-
-document.getElementById('downloadDouBtn').addEventListener('click', async () => {
-    if (!currentDouData) return;
-    
-    openDownloadModal('template', 'dou', async (fullFilename) => {
         try {
-            const response = await fetch('/download-dou', {
+            const response = await fetch('/download/' + type, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ dou_data: currentDouData })
+                body: JSON.stringify({ image_data: imageData })
             });
             
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = fullFilename;
+            a.download = defaultFilenames[type] || 'image.png';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -220,6 +192,30 @@ document.getElementById('downloadDouBtn').addEventListener('click', async () => 
             alert('下载失败: ' + error.message);
         }
     });
+});
+
+document.getElementById('downloadDouBtn').addEventListener('click', async () => {
+    if (!currentDouData) return;
+    
+    try {
+        const response = await fetch('/download-dou', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dou_data: currentDouData })
+        });
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'template.dou';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        alert('下载失败: ' + error.message);
+    }
 });
 
 document.querySelectorAll('.tab').forEach(tab => {

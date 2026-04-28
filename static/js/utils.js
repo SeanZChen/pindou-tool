@@ -21,45 +21,23 @@ function getMardColors() {
     return mardColors;
 }
 
-let downloadCallback = null;
-let downloadDefaultFilename = '';
-let downloadDefaultFormat = 'png';
-
-function openDownloadModal(filename, format = 'png', callback) {
-    downloadCallback = callback;
-    downloadDefaultFilename = filename;
-    downloadDefaultFormat = format;
-    
-    document.getElementById('downloadFilename').value = filename;
-    document.getElementById('downloadFormat').value = format;
-    document.getElementById('downloadModal').style.display = 'flex';
+function downloadFile(content, filename, mimeType = 'application/octet-stream') {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
-function closeDownloadModal() {
-    document.getElementById('downloadModal').style.display = 'none';
-    downloadCallback = null;
-    downloadDefaultFilename = '';
-}
-
-async function confirmDownload() {
-    const filename = document.getElementById('downloadFilename').value.trim();
-    const format = document.getElementById('downloadFormat').value;
-    
-    if (!filename) {
-        alert('请输入文件名');
-        return;
-    }
-    
-    let fullFilename = filename;
-    const extension = format === 'dou' ? '.dou' : '.png';
-    
-    if (!fullFilename.endsWith(extension)) {
-        fullFilename += extension;
-    }
-    
-    closeDownloadModal();
-    
-    if (downloadCallback) {
-        await downloadCallback(fullFilename, format);
-    }
+function downloadImageFromCanvas(canvas, filename) {
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }

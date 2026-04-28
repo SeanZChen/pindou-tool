@@ -324,32 +324,6 @@
         </div>
     </div>
     
-    <div id="downloadModal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>下载文件</h3>
-                <button class="modal-close" onclick="closeDownloadModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-item">
-                    <label for="downloadFilename">文件名</label>
-                    <input type="text" id="downloadFilename" placeholder="请输入文件名">
-                </div>
-                <div class="form-item">
-                    <label for="downloadFormat">文件格式</label>
-                    <select id="downloadFormat">
-                        <option value="png">PNG 图片</option>
-                        <option value="dou">.dou 模板</option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeDownloadModal()">取消</button>
-                <button class="btn" onclick="confirmDownload()">确定下载</button>
-            </div>
-        </div>
-    </div>
-    
     <script src="/static/js/utils.js"></script>
     <script src="/static/js/nav.js"></script>
     <script src="/static/js/image-processor.js"></script>
