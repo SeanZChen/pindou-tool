@@ -405,192 +405,8 @@ document.getElementById('previewEditedBtn').addEventListener('click', async () =
         const data = await response.json();
         
         if (data.success) {
-            const previewWindow = window.open();
-            previewWindow.document.write(`
-                <!DOCTYPE html>
-                <html lang="zh-CN">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>预览编辑结果</title>
-                    <style>
-                        body {
-                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                            margin: 20px;
-                            background: #f5f5f5;
-                        }
-                        .preview-container {
-                            max-width: 900px;
-                            margin: 0 auto;
-                            background: white;
-                            padding: 24px;
-                            border-radius: 16px;
-                            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-                        }
-                        h2 {
-                            margin-top: 0;
-                            color: #333;
-                            border-bottom: 2px solid #eee;
-                            padding-bottom: 12px;
-                        }
-                        .image-wrapper {
-                            position: relative;
-                            display: inline-block;
-                            margin: 16px 0;
-                            border: 2px solid #ddd;
-                            border-radius: 8px;
-                            overflow: hidden;
-                        }
-                        .image-wrapper img {
-                            display: block;
-                            max-width: 100%;
-                            height: auto;
-                        }
-                        .grid-overlay {
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;
-                            pointer-events: none;
-                            display: grid;
-                            gap: 0;
-                        }
-                        .grid-cell {
-                            border-right: 1px dashed rgba(0,0,0,0.3);
-                            border-bottom: 1px dashed rgba(0,0,0,0.3);
-                        }
-                        .grid-cell.five-x {
-                            border-right: 2px dashed #000;
-                        }
-                        .grid-cell.five-y {
-                            border-bottom: 2px dashed #000;
-                        }
-                        .color-list {
-                            margin-top: 24px;
-                        }
-                        .color-list h3 {
-                            font-size: 1.3rem;
-                            color: #444;
-                            margin-bottom: 16px;
-                        }
-                        .color-grid {
-                            display: flex;
-                            flex-wrap: wrap;
-                            gap: 12px;
-                        }
-                        .color-item {
-                            display: flex;
-                            align-items: center;
-                            gap: 8px;
-                            padding: 8px 12px;
-                            background: #fafafa;
-                            border-radius: 8px;
-                            border: 1px solid #eee;
-                        }
-                        .color-box {
-                            width: 28px;
-                            height: 28px;
-                            border-radius: 4px;
-                            border: 1px solid #ddd;
-                        }
-                        .color-code {
-                            font-size: 1.1rem;
-                            font-weight: 600;
-                            color: #333;
-                            min-width: 45px;
-                        }
-                        .color-count {
-                            font-size: 1.2rem;
-                            font-weight: bold;
-                            color: #666;
-                        }
-                        @media (max-width: 600px) {
-                            .preview-container {
-                                padding: 16px;
-                            }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="preview-container">
-                        <h2>🎨 编辑预览</h2>
-                        <div class="image-wrapper">
-                            <img id="previewImage" src="data:image/png;base64,${hexToBase64(data.image_data)}">
-                            <div id="gridOverlay" class="grid-overlay"></div>
-                        </div>
-                        <div class="color-list">
-                            <h3>📊 豆子数量统计</h3>
-                            <div id="colorGrid" class="color-grid"></div>
-                        </div>
-                    </div>
-                    <script>
-                        const colors = ${JSON.stringify(getMardColors())};
-                        const grid = ${JSON.stringify(editorDouData.grid)};
-                        const h = grid.length;
-                        const w = grid[0].length;
-                        
-                        const img = document.getElementById('previewImage');
-                        const overlay = document.getElementById('gridOverlay');
-                        
-                        img.onload = function() {
-                            const cellWidth = img.width / w;
-                            const cellHeight = img.height / h;
-                            
-                            overlay.style.gridTemplateColumns = 'repeat(' + w + ', 1fr)';
-                            overlay.style.width = img.width + 'px';
-                            overlay.style.height = img.height + 'px';
-                            
-                            for (let y = 0; y < h; y++) {
-                                for (let x = 0; x < w; x++) {
-                                    const cell = document.createElement('div');
-                                    cell.className = 'grid-cell';
-                                    if (x % 5 === 4) cell.classList.add('five-x');
-                                    if (y % 5 === 4) cell.classList.add('five-y');
-                                    overlay.appendChild(cell);
-                                }
-                            }
-                        };
-                        
-                        const counts = {};
-                        for (let y = 0; y < grid.length; y++) {
-                            for (let x = 0; x < grid[y].length; x++) {
-                                const code = grid[y][x];
-                                if (code) counts[code] = (counts[code] || 0) + 1;
-                            }
-                        }
-                        
-                        const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-                        const colorGrid = document.getElementById('colorGrid');
-                        
-                        sorted.forEach(function(item) {
-                            var code = item[0];
-                            var count = item[1];
-                            var rgb = colors[code];
-                            var div = document.createElement('div');
-                            div.className = 'color-item';
-                            
-                            var box = document.createElement('div');
-                            box.className = 'color-box';
-                            box.style.backgroundColor = 'rgb(' + rgb.join(',') + ')';
-                            
-                            var codeSpan = document.createElement('span');
-                            codeSpan.className = 'color-code';
-                            codeSpan.textContent = code;
-                            
-                            var countSpan = document.createElement('span');
-                            countSpan.className = 'color-count';
-                            countSpan.textContent = count + '颗';
-                            
-                            div.appendChild(box);
-                            div.appendChild(codeSpan);
-                            div.appendChild(countSpan);
-                            colorGrid.appendChild(div);
-                        });
-                    </script>
-                </body>
-                </html>
-            `);
+            const previewWindow = window.open('', '_blank', 'width=900,height=700');
+            previewWindow.document.write(renderPreviewHtml(data.image_data));
             previewWindow.document.close();
         } else {
             alert('预览失败: ' + data.error);
@@ -599,6 +415,183 @@ document.getElementById('previewEditedBtn').addEventListener('click', async () =
         alert('预览失败: ' + error.message);
     }
 });
+
+function renderPreviewHtml(imageData) {
+    const grid = editorDouData.grid;
+    const h = grid.length;
+    const w = grid[0].length;
+    const colors = getMardColors();
+    
+    const counts = {};
+    for (let y = 0; y < grid.length; y++) {
+        for (let x = 0; x < grid[y].length; x++) {
+            const code = grid[y][x];
+            if (code) counts[code] = (counts[code] || 0) + 1;
+        }
+    }
+    
+    let colorItems = '';
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    sorted.forEach(([code, count]) => {
+        const rgb = colors[code];
+        colorItems += `
+            <div class="color-item">
+                <div class="color-box" style="background-color: rgb(${rgb.join(',')})"></div>
+                <span class="color-code">${code}</span>
+                <span class="color-count">${count}颗</span>
+            </div>
+        `;
+    });
+    
+    return `
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预览编辑结果</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .preview-container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 12px;
+        }
+        .image-wrapper {
+            position: relative;
+            display: inline-block;
+            margin: 16px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .image-wrapper img {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            display: grid;
+            gap: 0;
+        }
+        .grid-cell {
+            border-right: 1px dashed rgba(0,0,0,0.25);
+            border-bottom: 1px dashed rgba(0,0,0,0.25);
+        }
+        .grid-cell.five-x {
+            border-right: 2px dashed #000;
+        }
+        .grid-cell.five-y {
+            border-bottom: 2px dashed #000;
+        }
+        .color-list {
+            margin-top: 24px;
+        }
+        .color-list h3 {
+            font-size: 1.5rem;
+            color: #444;
+            margin-bottom: 16px;
+        }
+        .color-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #fafafa;
+            border-radius: 10px;
+            border: 1px solid #eee;
+        }
+        .color-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+        .color-code {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            min-width: 50px;
+        }
+        .color-count {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #555;
+        }
+        @media (max-width: 600px) {
+            .preview-container {
+                padding: 16px;
+            }
+            .color-code {
+                font-size: 1.1rem;
+            }
+            .color-count {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <h2>🎨 编辑预览</h2>
+        <div class="image-wrapper">
+            <img id="previewImage" src="data:image/png;base64,${hexToBase64(imageData)}">
+            <div id="gridOverlay" class="grid-overlay"></div>
+        </div>
+        <div class="color-list">
+            <h3>📊 豆子数量统计</h3>
+            <div class="color-grid">${colorItems}</div>
+        </div>
+    </div>
+    <script>
+        const img = document.getElementById('previewImage');
+        const overlay = document.getElementById('gridOverlay');
+        const h = ${h};
+        const w = ${w};
+        
+        img.onload = function() {
+            overlay.style.gridTemplateColumns = 'repeat(' + w + ', 1fr)';
+            overlay.style.width = img.width + 'px';
+            overlay.style.height = img.height + 'px';
+            
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    if (x === w - 1) cell.classList.add('five-x');
+                    else if (x % 5 === 4) cell.classList.add('five-x');
+                    if (y === h - 1) cell.classList.add('five-y');
+                    else if (y % 5 === 4) cell.classList.add('five-y');
+                    overlay.appendChild(cell);
+                }
+            }
+        };
+    </script>
+</body>
+</html>`;
+}
 
 document.getElementById('downloadEditedDouBtn').addEventListener('click', async () => {
     try {
